@@ -30,7 +30,7 @@ footer, header, hgroup, menu, nav, section {
 	display: block;}
 
 .ukraine{
-	margin: auto;
+	margin: 0 auto 20px auto;
 }
 body {
 	line-height: 1;
