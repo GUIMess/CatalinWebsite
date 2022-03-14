@@ -29,7 +29,9 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;}
 
-
+.ukraine{
+	margin: auto;
+}
 body {
 	line-height: 1;
 }
