@@ -31,6 +31,7 @@ footer, header, hgroup, menu, nav, section {
 
 .ukraine{
 	margin: 0 auto 20px auto;
+	text-align: center;
 }
 body {
 	line-height: 1;
