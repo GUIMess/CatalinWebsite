@@ -303,6 +303,9 @@ input, select, textarea {
 	.align-right {
 		text-align: right;
 	}
+	#work p{
+		text-align: center;
+	}
 
 /* Form */
 
