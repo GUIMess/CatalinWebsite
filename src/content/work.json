@@ -1,0 +1,202 @@
+[
+  {
+    "slug": "live-alert-bot-core",
+    "title": "Production Discord Bot",
+    "summary": "My main build for over a year: a production Discord bot for a large college football community. Live scores, AP/CFP rankings, news, a pick'em competition system, and SVG scoreboards — built and maintained solo in production.",
+    "stack": ["Discord.js", "Node.js", "Express", "Bull", "Redis", "MongoDB", "Sharp", "SVG/Canvas", "Pino", "Prometheus", "Railway"],
+    "context": "I built this as an entry-level dev and learned most of the hard lessons in production: memory leaks, duplicate event storms, provider outages, interaction timeouts, queue spikes, and auth hardening.",
+    "demoHook": "Use break/fix mode to simulate what actually goes wrong in this system and how I stabilized it over time.",
+    "runtimePanels": [
+      {
+        "title": "Ingestion Pipeline",
+        "broken": "Polling is too aggressive, ESPN responses duplicate, and request volume spikes past safe limits.",
+        "fixed": "Rate-aware ingestion + retry backoff + request dedup keeps updates fast without API thrash."
+      },
+      {
+        "title": "Dispatch and Queueing",
+        "broken": "Alert bursts pile up in queue, delivery drifts, and users see late or noisy updates.",
+        "fixed": "Bull-backed job queues smooth burst traffic and keep delivery timing predictable."
+      },
+      {
+        "title": "Provider Failure Recovery",
+        "broken": "Single ESPN dependency causes hard downtime during provider incidents.",
+        "fixed": "Circuit breaker + fallback data path keeps the bot alive and reduces pager pressure."
+      }
+    ],
+    "proofStats": [
+      { "label": "Command modules", "value": "40" },
+      { "label": "Service modules", "value": "36" },
+      { "label": "Utility modules", "value": "205" },
+      { "label": "Automated schedulers", "value": "14" },
+      { "label": "Test files", "value": "70" },
+      { "label": "Total JS files", "value": "520" }
+    ],
+    "codeReceipts": [
+      {
+        "title": "Sharp Must Load First",
+        "file": "bot.js",
+        "snippet": "// Sharp config MUST be imported before any other modules — each instance creates independent caches\nimport './utils/sharpConfig.js';"
+      },
+      {
+        "title": "Health Endpoint",
+        "file": "core/bot-server.js",
+        "snippet": "this.app.get(\"/health\", (req, res) => { res.status(200).json({ status: \"healthy\", uptime: process.uptime() }); });"
+      },
+      {
+        "title": "Scheduler Stale Detection",
+        "file": "utils/schedulerHealth.js",
+        "snippet": "if (age !== null && age > maxSilence) { return { ...entry, status: entry.status === \"critical\" ? \"critical\" : \"degraded\", stale: true }; }"
+      },
+      {
+        "title": "Timing-Safe Auth",
+        "file": "core/bot-server.js",
+        "snippet": "return a.length === b.length && crypto.timingSafeEqual(a, b);"
+      }
+    ],
+    "architectureNotes": [
+      "Startup is split into three phases: bootstrap services, initialize core systems, then connect runtime and schedulers. This made boot failures locatable.",
+      "Core is separated into bot-core, bot-events, bot-schedulers, and bot-server so a failure in one doesn't cascade.",
+      "Image rendering uses Sharp, @resvg/resvg-js, and satori. Sharp config loads before any other module — the hard way proved each instance creates its own cache.",
+      "An ML-based news classifier (93K) categorizes and filters incoming stories. A separate adaptive classifier handles spam detection.",
+      "API access goes through a central optimization layer with caching, batching, retry normalization, and per-source rate-limit control.",
+      "14 automated schedulers run through a BotSchedulers orchestrator with heartbeat tracking and stale-threshold detection."
+    ],
+    "reliabilityNotes": [
+      "Redis + in-memory fallback for cache, session, and rate-limiter paths — degraded mode beats a hard miss.",
+      "Circuit breaker services protect ESPN and other external dependencies with fallback behavior.",
+      "Scheduler health tracks heartbeat age, degraded state, and critical state — 'is it running' wasn't enough.",
+      "Graceful shutdown cleans intervals, queues, Redis connections, analytics, and process resources — 12+ components.",
+      "Dashboard auth includes role permissions, session validation, CSRF token handling, and timing-safe credential comparisons.",
+      "Platform-aware memory management: Railway runs with --expose-gc and a 10-minute GC interval; thresholds and cleanup intervals differ per platform."
+    ],
+    "postmortem": [
+      "GuildPresences was enabled by default and silently caching 500MB–1GB of Discord presence data before I noticed. Disabling one intent flag freed it all.",
+      "Sharp doesn't share cache limits across instances. Image memory kept climbing until I found that every file importing Sharp made its own cache. Global config now loads before anything else.",
+      "Discord interaction timeouts (error 10062) kept appearing because I wasn't deferring fast enough. BaseCommand now defers immediately before any processing.",
+      "Graceful shutdown was an afterthought. On early restarts, intervals kept running and connections stayed open. Cleaning up 12+ components on exit fixed the instability."
+    ],
+    "tradeoffs": [
+      {
+        "label": "Fast polling",
+        "benefit": "Lower score delay during active game windows.",
+        "cost": "More rate-limit pressure and larger blast radius when retries misbehave."
+      },
+      {
+        "label": "Strict dedupe rules",
+        "benefit": "Cuts duplicate spam and protects trust.",
+        "cost": "Overly strict fingerprints can suppress rare but valid updates."
+      },
+      {
+        "label": "SVG scoreboards",
+        "benefit": "High-quality visual output that scans fast in Discord.",
+        "cost": "Image generation adds memory and render-time overhead that has to be managed carefully."
+      }
+    ],
+    "checkpoints": [
+      {
+        "stage": "2025 Q1 · First Live Runtime",
+        "move": "Shipped the first live ingest and Discord delivery loop on Railway.",
+        "signal": "Core loop worked. Duplicates and noisy retries showed up immediately under real load."
+      },
+      {
+        "stage": "2025 Q2 · Dedupe and Queue Discipline",
+        "move": "Added event fingerprinting and Bull-backed queues to control burst traffic.",
+        "signal": "Duplicate alerts dropped. Message ordering became predictable."
+      },
+      {
+        "stage": "2025 Q3 · SVG Scoreboards and Schedulers",
+        "move": "Shipped visual score rendering and built out the scheduler orchestration layer.",
+        "signal": "Scoreboards landed well. Found Sharp memory issues in the process."
+      },
+      {
+        "stage": "2025 Q4 · Reliability and Fallbacks",
+        "move": "Implemented circuit breaker behavior, fallback data paths, and graceful shutdown.",
+        "signal": "Provider outages no longer caused full downtime. Restarts became stable."
+      },
+      {
+        "stage": "2026 Q1 · Ops Hardening",
+        "move": "Expanded dashboard auth, scheduler health tracking, and memory management.",
+        "signal": "Debug cycles got faster. The GuildPresences and Sharp issues got found and fixed."
+      }
+    ],
+    "featured": true
+  },
+  {
+    "slug": "trek-field-guide",
+    "title": "Trek Field Guide",
+    "liveUrl": "https://trek-field-guide.netlify.app/",
+    "summary": "My secondary project: a themed interface where I practiced balancing bold visual direction with readable navigation.",
+    "stack": ["React", "JavaScript", "Netlify"],
+    "context": "I used this to sharpen UI craft while my main energy stayed on the bot. It is my cleanest visual-focused build.",
+    "demoHook": "Toggle density and mode to see where style helps exploration and where it hurts clarity.",
+    "runtimePanels": [
+      {
+        "title": "Navigation Density",
+        "broken": "Too many competing visual anchors slow down wayfinding.",
+        "fixed": "Clear section anchors and spacing hierarchy restore scan speed."
+      },
+      {
+        "title": "Theme Weight",
+        "broken": "Heavy thematic surfaces overpower task-focused content.",
+        "fixed": "Constrained style tokens preserve personality without losing legibility."
+      },
+      {
+        "title": "Interaction Rhythm",
+        "broken": "Motion timing stacks and adds visual fatigue.",
+        "fixed": "Reduced motion cadence keeps flow intentional and easier to follow."
+      }
+    ],
+    "postmortem": [
+      "Strong visuals improved exploration time.",
+      "Wayfinding had to stay strict or the theme got in the way.",
+      "Reducing component variants made iteration faster."
+    ],
+    "tradeoffs": [
+      {
+        "label": "Heavy thematic styling",
+        "benefit": "Distinct and memorable personality.",
+        "cost": "Readability degrades fast if the structure underneath is weak."
+      },
+      {
+        "label": "Exploration-first layout",
+        "benefit": "Encourages deeper browsing.",
+        "cost": "Task-focused users may prefer flatter paths."
+      }
+    ],
+    "checkpoints": [
+      {
+        "stage": "Phase 1 · Direction",
+        "move": "Locked visual language early and constrained component options.",
+        "signal": "The site felt cohesive rather than experimental noise."
+      },
+      {
+        "stage": "Phase 2 · Wayfinding",
+        "move": "Added stronger anchors and clearer section transitions.",
+        "signal": "Target content was easier to locate."
+      },
+      {
+        "stage": "Phase 3 · Density Tuning",
+        "move": "Compared compact, balanced, and expanded layouts.",
+        "signal": "Balanced mode provided the best readability-to-style ratio."
+      },
+      {
+        "stage": "Phase 4 · Cleanup",
+        "move": "Removed low-signal visual flourishes during break/fix passes.",
+        "signal": "Core actions became more obvious."
+      }
+    ],
+    "codeReceipts": [
+      {
+        "title": "Density Stress Testing",
+        "file": "field-guide/ui/layout.tsx",
+        "snippet": "const densityModes = [\"compact\", \"balanced\", \"expanded\"];"
+      },
+      {
+        "title": "Motion Budget Rule",
+        "file": "field-guide/styles/tokens.css",
+        "snippet": "transition-duration: var(--motion-fast); /* reduced on dense views */"
+      }
+    ],
+    "featured": true
+  }
+]

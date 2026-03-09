@@ -1,0 +1,18 @@
+[
+  {
+    "id": "band-site",
+    "title": "Setlist Sync",
+    "recipient": "Local band in Wichita",
+    "problem": "Set changes lived in chat screenshots and were constantly out of date before rehearsal.",
+    "shipped": "I built a mobile setlist board with quick edits, version history, and one-tap publish.",
+    "impact": "Setup time dropped from roughly 20 minutes to about 5."
+  },
+  {
+    "id": "nonprofit-board",
+    "title": "Board Brief",
+    "recipient": "Neighborhood nonprofit coordinator",
+    "problem": "Monthly board updates required manual copy-paste from scattered spreadsheets and docs.",
+    "shipped": "I shipped a summary generator that outputs a clean one-page operations report.",
+    "impact": "Monthly prep time dropped by around 60%."
+  }
+]

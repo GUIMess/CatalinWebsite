@@ -1,0 +1,53 @@
+[
+  {
+    "id": "retry-backoff-tuner",
+    "title": "Retry Backoff Tuner",
+    "category": "ai-flow",
+    "summary": "Tested retry windows to recover provider errors without creating API request storms.",
+    "result": "Exponential backoff + caps reduced failure cascades during outage windows.",
+    "tools": ["Node.js", "Retry logic", "Telemetry"],
+    "featured": true
+  },
+  {
+    "id": "cache-ttl-ladder",
+    "title": "Cache TTL Ladder",
+    "category": "ui",
+    "summary": "Compared short/medium/long TTL mixes across live scores, schedules, and rankings.",
+    "result": "Type-specific TTL rules improved freshness without hammering upstream APIs.",
+    "tools": ["Redis", "Cache policy", "Runtime metrics"],
+    "featured": true
+  },
+  {
+    "id": "scheduler-heartbeat-view",
+    "title": "Scheduler Heartbeat View",
+    "category": "motion",
+    "summary": "Built a visual pulse for scheduler health to detect stale jobs before users notice.",
+    "result": "Heartbeat + stale thresholds made automation failures easier to catch and recover.",
+    "tools": ["WebSocket", "Health checks", "Dashboard UI"],
+    "featured": true
+  },
+  {
+    "id": "queue-burst-sim",
+    "title": "Queue Burst Sim",
+    "category": "motion",
+    "summary": "Simulated game-day burst load and tuned worker throughput vs queue depth.",
+    "result": "Queue smoothing lowered delivery jitter during traffic spikes.",
+    "tools": ["Bull", "Redis", "Load simulation"]
+  },
+  {
+    "id": "event-fingerprint-audit",
+    "title": "Event Fingerprint Audit",
+    "category": "ui",
+    "summary": "Tested multiple fingerprint strategies against messy provider event payloads.",
+    "result": "Hybrid fingerprints reduced duplicates without losing important edge-case updates.",
+    "tools": ["Data normalization", "Hashing", "Replay tests"]
+  },
+  {
+    "id": "dashboard-auth-flow",
+    "title": "Dashboard Auth Flow",
+    "category": "ai-flow",
+    "summary": "Hardened admin flow with session validation, CSRF token rotation, and role gates.",
+    "result": "Admin endpoints became safer while keeping ops workflows usable.",
+    "tools": ["Express", "RBAC", "CSRF", "Session store"]
+  }
+]

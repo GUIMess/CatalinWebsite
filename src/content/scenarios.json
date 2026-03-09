@@ -1,0 +1,20 @@
+[
+  {
+    "id": "provider-outage",
+    "title": "Handle provider outage",
+    "prompt": "Primary sports data API starts timing out during peak traffic. What do I ship first?",
+    "response": "Open circuit on repeated failures, route to fallback source, and lower polling frequency until primary stabilizes."
+  },
+  {
+    "id": "duplicate-alert-storm",
+    "title": "Stop duplicate alert storm",
+    "prompt": "Users report repeated updates for the same play event. What is the first fix pass?",
+    "response": "Audit event keys, add fingerprint-based dedupe, then replay recent payloads to validate edge cases before rollout."
+  },
+  {
+    "id": "scheduler-silent-failure",
+    "title": "Recover silent scheduler drift",
+    "prompt": "Background jobs look active but one feed has gone stale for 40 minutes.",
+    "response": "Add heartbeat age alarms, mark stale jobs degraded, and auto-restart failed loops with cooldown guards."
+  }
+]

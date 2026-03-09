@@ -1,0 +1,17 @@
+:root {
+  --color-ink: #0c0c0f;
+  --color-paper: #f2f0eb;
+  --color-paper-muted: #c6c3ba;
+  --color-accent: #ff4d00;
+  --color-border: #2f2f34;
+  --color-surface: #16161b;
+  --shadow-hard: 0 0 0 1px var(--color-border);
+  --space-1: 0.5rem;
+  --space-2: 0.75rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+  --space-6: 3rem;
+  --radius: 4px;
+}
+

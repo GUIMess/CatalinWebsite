@@ -1,0 +1,533 @@
+{
+  "generatedAt": "2026-03-09T05:06:16.850Z",
+  "source": {
+    "repo": "sanitized sibling bot repository",
+    "pathHint": "external-bot-repo"
+  },
+  "counts": {
+    "commandModules": 40,
+    "serviceModules": 36,
+    "schedulerLoops": 15,
+    "testFiles": 76,
+    "dashboardTsxFiles": 95,
+    "runtimeTarget": "Node 22"
+  },
+  "schedulerLoops": [
+    {
+      "name": "scheduler-orchestrator",
+      "intervalMs": null,
+      "interval": "event-driven"
+    },
+    {
+      "name": "news-auto-posting",
+      "intervalMs": 900000,
+      "interval": "15m"
+    },
+    {
+      "name": "drama-auto-posting",
+      "intervalMs": 1800000,
+      "interval": "30m"
+    },
+    {
+      "name": "leaderboard-updates",
+      "intervalMs": 7200000,
+      "interval": "2h"
+    },
+    {
+      "name": "prize-scheduler",
+      "intervalMs": 14400000,
+      "interval": "4h"
+    },
+    {
+      "name": "weekly-prize-distribution",
+      "intervalMs": 21600000,
+      "interval": "6h"
+    },
+    {
+      "name": "weekly-game-scheduler",
+      "intervalMs": 14400000,
+      "interval": "4h"
+    },
+    {
+      "name": "rankings-auto-posting",
+      "intervalMs": 60000,
+      "interval": "1m"
+    },
+    {
+      "name": "live-scoring",
+      "intervalMs": null,
+      "interval": "event-driven"
+    },
+    {
+      "name": "pickem-auto-scoring",
+      "intervalMs": 900000,
+      "interval": "15m"
+    },
+    {
+      "name": "pickem-auto-lock",
+      "intervalMs": 300000,
+      "interval": "5m"
+    },
+    {
+      "name": "live-pick-distributions",
+      "intervalMs": 180000,
+      "interval": "3m"
+    },
+    {
+      "name": "live-score-canvas-poster",
+      "intervalMs": 300000,
+      "interval": "5m"
+    },
+    {
+      "name": "betting-lines-updater",
+      "intervalMs": null,
+      "interval": "event-driven"
+    },
+    {
+      "name": "daily-schedule-poster",
+      "intervalMs": null,
+      "interval": "event-driven"
+    }
+  ],
+  "endpoints": [
+    "/",
+    "/api/v2/user/permissions",
+    "/dashboard",
+    "/dashboard.css",
+    "/dashboard.html",
+    "/dashboard.js",
+    "/favicon.ico",
+    "/favicon.svg",
+    "/health",
+    "/internal-api/ping",
+    "/live-updates",
+    "/login",
+    "/login.html",
+    "/status"
+  ],
+  "operatorDashboardSnapshot": {
+    "summary": "Sanitized view of the bot's real operator surfaces. Field names and thresholds are source-backed; live values are deliberately withheld.",
+    "panels": [
+      {
+        "title": "Dashboard bot status",
+        "route": "/api/bot/status",
+        "badge": "dashboard",
+        "detail": "Operator-facing status surface with bot liveness, uptime, heap usage, ping, and high-level runtime counts.",
+        "fields": [
+          "online",
+          "uptime",
+          "memory.used",
+          "memory.total",
+          "memory.external",
+          "ping"
+        ],
+        "scrub": "Guild, user, and channel totals exist in the live payload but stay redacted here. nodeVersion and platform are also permission-gated.",
+        "receipts": [
+          {
+            "label": "Status payload fields",
+            "file": "routes/dashboard.js",
+            "line": 84
+          },
+          {
+            "label": "Admin-only field strip",
+            "file": "routes/dashboard.js",
+            "line": 73
+          }
+        ]
+      },
+      {
+        "title": "Public health check",
+        "route": "/health",
+        "badge": "public",
+        "detail": "Machine-readable health response for platform pings and deploy verification, including uptime and raw memory usage.",
+        "fields": [
+          "status",
+          "timestamp",
+          "platform",
+          "uptime",
+          "memory"
+        ],
+        "scrub": "The shape is real. Live timestamps, host platform details, and current heap values are intentionally omitted from the portfolio.",
+        "receipts": [
+          {
+            "label": "Healthy response",
+            "file": "core/bot-server.js",
+            "line": 108
+          },
+          {
+            "label": "Unhealthy fallback",
+            "file": "core/bot-server.js",
+            "line": 116
+          }
+        ]
+      },
+      {
+        "title": "Live update handshake",
+        "route": "/live-updates",
+        "badge": "websocket",
+        "detail": "Handshake surface that advertises WebSocket availability, upgrade semantics, and connection count for live operator views.",
+        "fields": [
+          "protocol",
+          "path",
+          "upgrade",
+          "status",
+          "connections"
+        ],
+        "scrub": "Current connection counts and deployment details are hidden, but the real route shape is preserved.",
+        "receipts": [
+          {
+            "label": "WebSocket status payload",
+            "file": "core/bot-server.js",
+            "line": 137
+          }
+        ]
+      },
+      {
+        "title": "Scheduler health snapshot",
+        "route": "internal snapshot",
+        "badge": "health-model",
+        "detail": "Loop health is derived from overall status, schedulerCount, heartbeat age, stale thresholds, and consecutive error state.",
+        "fields": [
+          "status",
+          "schedulerCount",
+          "timestamp",
+          "heartbeatAgeMs",
+          "staleThresholdMs",
+          "errorCount"
+        ],
+        "scrub": "Per-loop live ages and current errors remain redacted here, but the model mirrors the real health snapshot contract.",
+        "receipts": [
+          {
+            "label": "Snapshot envelope",
+            "file": "utils/schedulerHealth.js",
+            "line": 149
+          },
+          {
+            "label": "Stale threshold logic",
+            "file": "utils/schedulerHealth.js",
+            "line": 109
+          }
+        ]
+      }
+    ],
+    "memoryThresholds": [
+      {
+        "label": "warning",
+        "value": "6144MB",
+        "note": "early memory warning rail"
+      },
+      {
+        "label": "critical",
+        "value": "12288MB",
+        "note": "manual attention territory"
+      },
+      {
+        "label": "emergency",
+        "value": "20480MB",
+        "note": "high-risk process pressure"
+      },
+      {
+        "label": "cache flush",
+        "value": "4096MB",
+        "note": "unified cache emergency cleanup"
+      }
+    ],
+    "cadenceNotes": [
+      {
+        "label": "bot status cache",
+        "value": "10s"
+      },
+      {
+        "label": "cache emergency monitor",
+        "value": "30m"
+      },
+      {
+        "label": "aggressive cleanup",
+        "value": "10m"
+      }
+    ],
+    "accessRules": [
+      "nodeVersion and platform are stripped from bot status unless the caller has system-admin permission",
+      "public health and live-update routes stay machine-readable, but this portfolio removes current timestamps, live counts, and deployment identity",
+      "guild, user, and channel totals exist in the live dashboard payload and are intentionally omitted here"
+    ]
+  },
+  "pressureProfile": {
+    "summary": "Build-time, source-derived runtime pressure profile. Snapshot-backed on purpose; not fake live telemetry.",
+    "metrics": [
+      {
+        "label": "Fastest loop",
+        "value": "1m",
+        "detail": "rankings-auto-posting is the tightest scheduled cadence in the bot startup graph."
+      },
+      {
+        "label": "Fast loops",
+        "value": "4",
+        "detail": "4 scheduler loops run at 1m-5m cadence and carry the highest heartbeat pressure."
+      },
+      {
+        "label": "Event-driven jobs",
+        "value": "4",
+        "detail": "4 jobs stay dormant until work arrives instead of polling constantly."
+      },
+      {
+        "label": "Stale multiplier",
+        "value": "3x",
+        "detail": "Heartbeat silence is judged against the configured stale window before a loop is treated as degraded."
+      },
+      {
+        "label": "Critical trip",
+        "value": "3 errs",
+        "detail": "11 scheduler paths explicitly wire errors into shared health state."
+      },
+      {
+        "label": "Cache namespaces",
+        "value": "15",
+        "detail": "15 explicit memory/Redis namespaces keep cache boundaries visible instead of ad hoc."
+      }
+    ],
+    "operatorSurfaces": [
+      "/dashboard",
+      "/health",
+      "/live-updates",
+      "/status"
+    ],
+    "notes": [
+      "Runtime target: Node 22",
+      "4 public operator surfaces expose health/runtime status",
+      "7 recovery rails were detected across cache, analytics, scheduler health, and shutdown paths"
+    ],
+    "recoveryRails": [
+      {
+        "label": "Scheduler stale downgrade",
+        "detail": "Heartbeat silence beyond the stale window marks loops degraded before they disappear entirely.",
+        "file": "utils/schedulerHealth.js",
+        "line": 103
+      },
+      {
+        "label": "Scheduler critical trip",
+        "detail": "Repeated scheduler errors promote the loop from degraded to critical instead of hiding the failure.",
+        "file": "utils/schedulerHealth.js",
+        "line": 69
+      },
+      {
+        "label": "Memory-only cache mode",
+        "detail": "If Redis is unavailable, the runtime stays up on memory cache instead of hard failing.",
+        "file": "utils/unifiedCache.js",
+        "line": 166
+      },
+      {
+        "label": "Emergency cache cleanup",
+        "detail": "Heap pressure triggers cache flush and optional forced GC before the process spirals.",
+        "file": "utils/unifiedCache.js",
+        "line": 184
+      },
+      {
+        "label": "Stale dashboard cache fallback",
+        "detail": "If fresh analytics fail, the dashboard can serve stale cached output instead of a blank panel.",
+        "file": "routes/dashboard.js",
+        "line": 950
+      },
+      {
+        "label": "Legacy analytics fallback",
+        "detail": "Hourly graphs fall back to older metrics sources when the preferred path returns unusable data.",
+        "file": "routes/dashboard.js",
+        "line": 1703
+      },
+      {
+        "label": "Graceful shutdown path",
+        "detail": "Signals trigger structured cleanup instead of dropping the process cold.",
+        "file": "bot.js",
+        "line": 330
+      }
+    ]
+  },
+  "incidentTimeline": [
+    {
+      "id": "analytics-truth",
+      "category": "analytics",
+      "date": "2026-03-08",
+      "title": "Activity graphs stopped lying after restart and hydrate drift",
+      "summary": "Two consecutive fixes repaired graph normalization and rebuilt the hourly buffer when restore paths lost its circular shape.",
+      "outcome": "The dashboard keeps showing current-session pressure instead of flattening to zero after resets, warmup, or fallback paths.",
+      "logReceipt": "[DASHBOARD] Falling back to legacy hourly metrics: {mongoError.message}",
+      "commits": [
+        {
+          "hash": "5ef78cac",
+          "date": "2026-03-08",
+          "summary": "Fix analytics hourly activity buffer recovery"
+        },
+        {
+          "hash": "250b68d4",
+          "date": "2026-03-07",
+          "summary": "Fix dashboard analytics graph series normalization"
+        }
+      ],
+      "sourceReceipts": [
+        {
+          "label": "Dashboard fallback path",
+          "file": "routes/dashboard.js",
+          "line": 1703
+        },
+        {
+          "label": "Collector buffer rebuild",
+          "file": "utils/analyticsCollector.js",
+          "line": 240
+        }
+      ]
+    },
+    {
+      "id": "pickem-boundary",
+      "category": "runtime",
+      "date": "2026-03-08",
+      "title": "Pickem lock boundaries were brought back into one consistent state",
+      "summary": "The disabled-button check, persisted lock flag, and click-time game lookup were aligned so CBB picks stop acting closed while looking open.",
+      "outcome": "Interaction state now matches what the poll communicates instead of splitting between UI and handler behavior.",
+      "logReceipt": null,
+      "commits": [
+        {
+          "hash": "8ea457d4",
+          "date": "2026-03-08",
+          "summary": "Fix CBB pickem dead-button lock consistency and interaction lookup"
+        }
+      ],
+      "sourceReceipts": [
+        {
+          "label": "Persisted lock boundary",
+          "file": "utils/buttonPickemSystem.js",
+          "line": 419
+        },
+        {
+          "label": "Started-game lookup override",
+          "file": "core/bot-events.js",
+          "line": 420
+        }
+      ]
+    },
+    {
+      "id": "operator-hardening",
+      "category": "security",
+      "date": "2026-03-06",
+      "title": "Operator access and health visibility were hardened together",
+      "summary": "Health endpoints, live update surfaces, rate limiting, and auth boundaries were tightened in the same layer instead of patched piecemeal.",
+      "outcome": "The runtime stays inspectable to operators while dashboard access paths get stricter and more deliberate.",
+      "logReceipt": null,
+      "commits": [
+        {
+          "hash": "ea430e9c",
+          "date": "2026-03-06",
+          "summary": "Implement full auth, config, health, and CI hardening pass"
+        },
+        {
+          "hash": "ccf27485",
+          "date": "2026-03-06",
+          "summary": "Harden auth and admin APIs; improve rate limiting and health checks"
+        }
+      ],
+      "sourceReceipts": [
+        {
+          "label": "Health route",
+          "file": "core/bot-server.js",
+          "line": 105
+        },
+        {
+          "label": "Auth rate limiter",
+          "file": "core/bot-server.js",
+          "line": 147
+        }
+      ]
+    },
+    {
+      "id": "memory-containment",
+      "category": "reliability",
+      "date": "2026-03-05",
+      "title": "Memory containment moved from deploy folklore to designed rails",
+      "summary": "Native rendering assumptions were simplified, obsolete allocator hacks were removed, and explicit cleanup paths remained in place for cache and shutdown pressure.",
+      "outcome": "High-output periods rely on designed containment and recovery paths instead of hoping the process behaves.",
+      "logReceipt": "[UnifiedCache] Emergency cleanup triggered: {heapUsedMB}MB > {threshold}MB",
+      "commits": [
+        {
+          "hash": "f3d7e910",
+          "date": "2026-03-05",
+          "summary": "fix(deploy): remove jemalloc — resvg subprocess model eliminates native memory fragmentation"
+        }
+      ],
+      "sourceReceipts": [
+        {
+          "label": "Cache emergency cleanup",
+          "file": "utils/unifiedCache.js",
+          "line": 184
+        },
+        {
+          "label": "Graceful shutdown signal",
+          "file": "bot.js",
+          "line": 330
+        }
+      ]
+    }
+  ],
+  "recentOpsMoves": [
+    {
+      "hash": "5ef78cac",
+      "date": "2026-03-08",
+      "summary": "Fix analytics hourly activity buffer recovery",
+      "category": "analytics"
+    },
+    {
+      "hash": "8ea457d4",
+      "date": "2026-03-08",
+      "summary": "Fix CBB pickem dead-button lock consistency and interaction lookup",
+      "category": "runtime"
+    },
+    {
+      "hash": "fd21914b",
+      "date": "2026-03-07",
+      "summary": "Improve coach fallback disambiguation, role journey badges, and headshot priority",
+      "category": "reliability"
+    },
+    {
+      "hash": "2942005d",
+      "date": "2026-03-07",
+      "summary": "Improve daily schedule typography and enlarge TV logos",
+      "category": "analytics"
+    },
+    {
+      "hash": "250b68d4",
+      "date": "2026-03-07",
+      "summary": "Fix dashboard analytics graph series normalization",
+      "category": "analytics"
+    },
+    {
+      "hash": "7d41df03",
+      "date": "2026-03-06",
+      "summary": "Improve CBB matchup ESPN context and leader fallbacks",
+      "category": "reliability"
+    }
+  ],
+  "receipts": [
+    {
+      "label": "Scheduler orchestration boot",
+      "file": "core/bot-schedulers.js",
+      "line": 23,
+      "signal": "Centralized startup path and scheduler registration."
+    },
+    {
+      "label": "Health endpoint",
+      "file": "core/bot-server.js",
+      "line": 105,
+      "signal": "Operational runtime health surface for deploy/platform checks."
+    },
+    {
+      "label": "Heartbeat stale logic",
+      "file": "utils/schedulerHealth.js",
+      "line": 88,
+      "signal": "Per-loop stale detection and degraded/critical status calculation."
+    },
+    {
+      "label": "WebSocket runtime updates",
+      "file": "core/bot-server.js",
+      "line": 626,
+      "signal": "Dashboard update channel for live operator visibility."
+    }
+  ]
+}
