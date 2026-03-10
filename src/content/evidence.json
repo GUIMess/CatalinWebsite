@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-09T05:06:16.850Z",
+  "generatedAt": "2026-03-10T00:22:57.916Z",
   "source": {
     "repo": "sanitized sibling bot repository",
     "pathHint": "external-bot-repo"
@@ -91,6 +91,7 @@
   ],
   "endpoints": [
     "/",
+    "/api/public/portfolio-telemetry",
     "/api/v2/user/permissions",
     "/dashboard",
     "/dashboard.css",
@@ -152,12 +153,12 @@
           {
             "label": "Healthy response",
             "file": "core/bot-server.js",
-            "line": 108
+            "line": 524
           },
           {
             "label": "Unhealthy fallback",
             "file": "core/bot-server.js",
-            "line": 116
+            "line": 532
           }
         ]
       },
@@ -178,7 +179,7 @@
           {
             "label": "WebSocket status payload",
             "file": "core/bot-server.js",
-            "line": 137
+            "line": 553
           }
         ]
       },
@@ -372,7 +373,7 @@
         {
           "label": "Collector buffer rebuild",
           "file": "utils/analyticsCollector.js",
-          "line": 240
+          "line": 270
         }
       ]
     },
@@ -428,12 +429,12 @@
         {
           "label": "Health route",
           "file": "core/bot-server.js",
-          "line": 105
+          "line": 521
         },
         {
           "label": "Auth rate limiter",
           "file": "core/bot-server.js",
-          "line": 147
+          "line": 581
         }
       ]
     },
@@ -514,7 +515,7 @@
     {
       "label": "Health endpoint",
       "file": "core/bot-server.js",
-      "line": 105,
+      "line": 521,
       "signal": "Operational runtime health surface for deploy/platform checks."
     },
     {
@@ -526,7 +527,7 @@
     {
       "label": "WebSocket runtime updates",
       "file": "core/bot-server.js",
-      "line": 626,
+      "line": 1060,
       "signal": "Dashboard update channel for live operator visibility."
     }
   ]

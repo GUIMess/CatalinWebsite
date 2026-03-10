@@ -1,13 +1,19 @@
 import type { Experiment } from "../../types/content";
 
-const categories: Experiment["category"][] = ["motion", "ui", "ai-flow", "3d"];
+const categoryLabels: Record<Experiment["category"], string> = {
+  motion: "motion",
+  ui: "ui",
+  "ai-flow": "ai-flow",
+  "3d": "3d"
+};
 
 type ExperimentFilterBarProps = {
   active: Experiment["category"] | "all";
+  categories: Experiment["category"][];
   onSelect: (category: Experiment["category"] | "all") => void;
 };
 
-export function ExperimentFilterBar({ active, onSelect }: ExperimentFilterBarProps) {
+export function ExperimentFilterBar({ active, categories, onSelect }: ExperimentFilterBarProps) {
   return (
     <div className="button-row">
       <button
@@ -24,10 +30,9 @@ export function ExperimentFilterBar({ active, onSelect }: ExperimentFilterBarPro
           type="button"
           onClick={() => onSelect(category)}
         >
-          {category}
+          {categoryLabels[category]}
         </button>
       ))}
     </div>
   );
 }
-

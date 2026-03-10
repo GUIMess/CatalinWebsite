@@ -4,10 +4,10 @@ import App from "./App";
 import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/utilities.css";
+import "./styles/cohesion.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
-

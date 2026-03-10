@@ -5,59 +5,56 @@ import { usePageMeta } from "../lib/seo";
 
 const typedWorkItems = workItems as WorkItem[];
 
-function scoreWork(item: WorkItem): number {
-  const tradeoffDepth = item.tradeoffs.length * 8;
-  const checkpointDepth = item.checkpoints.length * 12;
-  const postmortemDepth = item.postmortem.length * 10;
-  const proofDepth = (item.proofStats?.length ?? 0) * 10;
-  return tradeoffDepth + checkpointDepth + postmortemDepth + proofDepth;
-}
-
 export function WorkIndexPage() {
   usePageMeta({
     title: "Work Systems | Catalin Siegling",
     description:
-      "Sanitized project breakdowns with real tradeoffs, failure points, and what I learned while shipping.",
+      "A focused set of shipped systems with tradeoffs, failure points, and what changed over time.",
     path: "/work"
   });
 
   return (
     <div className="stack">
-      <section className="surface">
-        <p className="eyebrow">Work Systems</p>
-        <h1>Primary: production bot. Secondary: Trek Field Guide.</h1>
+      <section className="surface page-intro work-index-hero">
+        <p className="eyebrow">Selected Work</p>
+        <h1>Two projects matter here.</h1>
         <p>
-          I cut weaker filler work. This section now reflects what I actually built and maintained over the last year.
+          The first is the live system that absorbed most of my time and taught me most of my lessons. The
+          second is a cleaner visual build that shows how I handle interface craft.
         </p>
       </section>
 
-      <section className="card-grid work-index-grid">
-        {typedWorkItems.map((item) => (
-          <article className="card work-index-card" key={item.slug}>
-            <p className="tag">Depth score {scoreWork(item)}</p>
-            <h2>{item.title}</h2>
-            <p>{item.summary ?? item.context}</p>
-            <p className="muted">
-              {item.checkpoints.length} checkpoints · {item.tradeoffs.length} tradeoffs · {item.postmortem.length} postmortem
-              notes
-            </p>
-            {item.proofStats?.length ? (
+      <section className="surface work-index-shell">
+        <div className="card-grid work-index-grid">
+          {typedWorkItems.map((item) => (
+            <article
+              className={item.slug === "live-alert-bot-core" ? "card work-index-card work-index-card-flagship" : "card work-index-card"}
+              key={item.slug}
+            >
+              <p className="tag">{item.slug === "live-alert-bot-core" ? "Flagship system" : "Companion project"}</p>
+              <h2>{item.title}</h2>
+              <p>{item.summary ?? item.context}</p>
               <p className="muted">
-                {item.proofStats.slice(0, 2).map((stat) => `${stat.value} ${stat.label.toLowerCase()}`).join(" · ")}
+                {item.checkpoints.length} checkpoints / {item.tradeoffs.length} tradeoffs / {item.postmortem.length} field notes
               </p>
-            ) : null}
-            <div className="button-row">
-              <Link className="inline-link" to={`/work/${item.slug}`}>
-                open system
-              </Link>
-              {item.liveUrl && (
-                <a className="inline-link" href={item.liveUrl} target="_blank" rel="noreferrer">
-                  live deploy
-                </a>
-              )}
-            </div>
-          </article>
-        ))}
+              {item.proofStats?.length ? (
+                <p className="muted">
+                  {item.proofStats.slice(0, 2).map((stat) => `${stat.value} ${stat.label.toLowerCase()}`).join(" / ")}
+                </p>
+              ) : null}
+              <div className="button-row">
+                <Link className="inline-link" to={`/work/${item.slug}`}>
+                  Open system view
+                </Link>
+                {item.liveUrl && (
+                  <a className="inline-link" href={item.liveUrl} target="_blank" rel="noreferrer">
+                    Visit live build
+                  </a>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
     </div>
   );

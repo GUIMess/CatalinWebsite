@@ -1,34 +1,47 @@
-import { Suspense, lazy } from "react";
 import { Link } from "react-router-dom";
 import { HeroStatement } from "../components/home/HeroStatement";
 import { LiveBotFeed } from "../components/home/LiveBotFeed";
 import workItems from "../content/work.json";
+import evidence from "../content/evidence.json";
 import type { WorkItem } from "../types/content";
 import { usePageMeta } from "../lib/seo";
 
-const featuredWork = (workItems as WorkItem[]).filter((item) => item.featured).slice(0, 2);
+type EvidenceSnapshot = {
+  incidentTimeline: Array<{
+    id: string;
+    date: string;
+    category: string;
+    title: string;
+    summary: string;
+    outcome: string;
+    commits: Array<{
+      hash: string;
+      date: string;
+      summary: string;
+    }>;
+  }>;
+  recentOpsMoves: Array<{
+    hash: string;
+    date: string;
+    summary: string;
+    category: string;
+  }>;
+};
 
-const BotOperatorBriefing = lazy(() =>
-  import("../components/home/BotOperatorBriefing").then((module) => ({ default: module.BotOperatorBriefing }))
-);
-const FeaturedExperiments = lazy(() =>
-  import("../components/home/FeaturedExperiments").then((module) => ({ default: module.FeaturedExperiments }))
-);
-
-function SectionFallback({ label }: Readonly<{ label: string }>) {
-  return (
-    <section className="surface loading-surface">
-      <p className="eyebrow">Loading</p>
-      <h2>{label}</h2>
-    </section>
-  );
-}
+const typedWorkItems = workItems as WorkItem[];
+const featuredWork = typedWorkItems.filter((item) => item.featured).slice(0, 2);
+const snapshot = evidence as EvidenceSnapshot;
+const incidentHighlights = snapshot.incidentTimeline.slice(0, 3);
+const flagshipWork = featuredWork[0];
+const companionWork = featuredWork[1];
+const flagshipPanels = flagshipWork?.runtimePanels?.slice(0, 3) ?? [];
+const flagshipCheckpoints = flagshipWork?.checkpoints?.slice(0, 4) ?? [];
 
 export function HomePage() {
   usePageMeta({
-    title: "Catalin Siegling | Production Bot Engineer",
+    title: "Catalin Siegling | Live Systems and Product Work",
     description:
-      "Portfolio built around a year of production bot work: live system, real incidents, architecture, and reliability fixes.",
+      "A live systems portfolio centered on production bot work, recent fixes, and product experiments.",
     path: "/"
   });
 
@@ -36,38 +49,122 @@ export function HomePage() {
     <div className="stack home-stack">
       <HeroStatement />
       <LiveBotFeed />
-      <Suspense fallback={<SectionFallback label="Loading operator briefing..." />}>
-        <BotOperatorBriefing />
-      </Suspense>
-      <Suspense fallback={<SectionFallback label="Loading technical decisions..." />}>
-        <FeaturedExperiments />
-      </Suspense>
-      <section className="surface home-work-section">
-        <div className="split-header">
+      <section className="surface home-work-section" id="system-builds">
+        <div className="chapter-header">
+          <div className="chapter-index-block">
+            <span>02</span>
+            <small>Build arc</small>
+          </div>
           <div>
-            <p className="eyebrow">The Work</p>
-            <h2>The bot in full detail, plus a secondary UI project.</h2>
+            <p className="eyebrow">Main Builds</p>
+            <h2>The flagship runtime and the cleaner companion piece.</h2>
+            <p className="chapter-copy">
+              One project is the production machine. The other proves I can push a stronger visual system without losing
+              clarity.
+            </p>
+          </div>
+          <Link className="inline-link" to="/playground">
+            Open smaller experiments
+          </Link>
+        </div>
+        <div className="home-build-grid">
+          {flagshipWork ? (
+            <article className="card build-flagship-card">
+              <div className="build-card-head">
+                <div>
+                  <p className="tag">Flagship system</p>
+                  <h3>{flagshipWork.title}</h3>
+                </div>
+                <Link className="inline-link" to={`/work/${flagshipWork.slug}`}>
+                  Open system view
+                </Link>
+              </div>
+              <p className="build-card-summary">{flagshipWork.summary ?? flagshipWork.context}</p>
+              <div className="build-arc-timeline">
+                {flagshipCheckpoints.map((checkpoint, index) => (
+                  <article className="build-arc-step" key={checkpoint.stage}>
+                    <span>{`0${index + 1}`}</span>
+                    <strong>{checkpoint.stage}</strong>
+                    <p>{checkpoint.move}</p>
+                    <small>{checkpoint.signal}</small>
+                  </article>
+                ))}
+              </div>
+            </article>
+          ) : null}
+
+          <div className="home-build-side">
+            {companionWork ? (
+              <article className="card selected-work-card">
+                <p className="tag">Companion build</p>
+                <h3>{companionWork.title}</h3>
+                <p>{companionWork.summary ?? companionWork.context}</p>
+                {companionWork.stack ? <p className="muted">Stack: {companionWork.stack.join(", ")}</p> : null}
+                <div className="build-card-links">
+                  <Link className="inline-link" to={`/work/${companionWork.slug}`}>
+                    Open system view
+                  </Link>
+                  {companionWork.liveUrl ? (
+                    <a className="inline-link" href={companionWork.liveUrl} target="_blank" rel="noreferrer">
+                      Visit live build
+                    </a>
+                  ) : null}
+                </div>
+              </article>
+            ) : null}
+
+            {flagshipPanels.length ? (
+              <article className="card build-panels-card">
+                <p className="tag">Pressure points</p>
+                <h3>Where the main system bends first.</h3>
+                <div className="build-panel-list">
+                  {flagshipPanels.map((panel) => (
+                    <article className="build-panel-row" key={panel.title}>
+                      <strong>{panel.title}</strong>
+                      <p>{panel.fixed}</p>
+                    </article>
+                  ))}
+                </div>
+              </article>
+            ) : null}
           </div>
         </div>
-        <div className="card-grid">
-          {featuredWork.map((item) => (
-            <article key={item.slug} className="card">
+      </section>
+      <section className="surface home-fix-section" id="recent-fixes">
+        <div className="chapter-header">
+          <div className="chapter-index-block">
+            <span>03</span>
+            <small>Recent fixes</small>
+          </div>
+          <div>
+            <p className="eyebrow">Recent Fixes</p>
+            <h2>The latest break and repair work that actually changed the system.</h2>
+            <p className="chapter-copy">
+              The portfolio should feel alive because the maintenance work is alive. These are pulled from the current
+              evidence snapshot.
+            </p>
+          </div>
+          <Link className="inline-link" to="/lab-log">
+            Open full build feed
+          </Link>
+        </div>
+        <div className="fix-rail">
+          {incidentHighlights.map((item, index) => (
+            <article className="card fix-step-card" key={item.id}>
+              <div className="fix-step-top">
+                <span>{`0${index + 1}`}</span>
+                <p className="tag">
+                  {item.date} / {item.category}
+                </p>
+              </div>
               <h3>{item.title}</h3>
-              <p>{item.summary ?? item.context}</p>
-              {item.stack && <p className="muted">Stack: {item.stack.join(", ")}</p>}
-              {item.proofStats?.length ? (
-                <p className="muted">
-                  {item.proofStats.slice(0, 3).map((stat) => `${stat.value} ${stat.label.toLowerCase()}`).join(" · ")}
+              <p>{item.summary}</p>
+              <p className="muted">{item.outcome}</p>
+              {item.commits.length ? (
+                <p className="fix-commit">
+                  {item.commits[0].hash.slice(0, 8)} / {item.commits[0].summary}
                 </p>
               ) : null}
-              <Link className="inline-link" to={`/work/${item.slug}`}>
-                Open full breakdown
-              </Link>
-              {item.liveUrl && (
-                <a className="inline-link" href={item.liveUrl} target="_blank" rel="noreferrer">
-                  View live project
-                </a>
-              )}
             </article>
           ))}
         </div>

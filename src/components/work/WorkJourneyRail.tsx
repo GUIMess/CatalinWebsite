@@ -16,8 +16,8 @@ export function WorkJourneyRail({ checkpoints }: WorkJourneyRailProps) {
 
   return (
     <section className="surface">
-      <p className="eyebrow">Journey Rail</p>
-      <h2>How I iterated this project over time</h2>
+      <p className="eyebrow">Timeline</p>
+      <h2>How the system changed under real use</h2>
       <div className="journey-rail-grid">
         <aside className="journey-rail-nav">
           {checkpoints.map((checkpoint, index) => (
@@ -33,9 +33,9 @@ export function WorkJourneyRail({ checkpoints }: WorkJourneyRailProps) {
         </aside>
         <article className="card journey-stage-card">
           <p className="tag">{activeCheckpoint.stage}</p>
-          <h3>What I shipped</h3>
+          <h3>What changed</h3>
           <p>{activeCheckpoint.move}</p>
-          <h3>What happened after</h3>
+          <h3>What that exposed</h3>
           <p>{activeCheckpoint.signal}</p>
         </article>
       </div>

@@ -1,11 +1,11 @@
 [
   {
     "slug": "live-alert-bot-core",
-    "title": "Production Discord Bot",
-    "summary": "My main build for over a year: a production Discord bot for a large college football community. Live scores, AP/CFP rankings, news, a pick'em competition system, and SVG scoreboards — built and maintained solo in production.",
+    "title": "Production Sports Bot",
+    "summary": "My main build for over a year: a production bot for a large sports community. Live scores, rankings, news, competitions, and generated scoreboards, built and maintained solo in production.",
     "stack": ["Discord.js", "Node.js", "Express", "Bull", "Redis", "MongoDB", "Sharp", "SVG/Canvas", "Pino", "Prometheus", "Railway"],
     "context": "I built this as an entry-level dev and learned most of the hard lessons in production: memory leaks, duplicate event storms, provider outages, interaction timeouts, queue spikes, and auth hardening.",
-    "demoHook": "Use break/fix mode to simulate what actually goes wrong in this system and how I stabilized it over time.",
+    "demoHook": "Flip between steady-state and stress-path views to see where this system bends first and what kept it stable.",
     "runtimePanels": [
       {
         "title": "Ingestion Pipeline",
@@ -125,10 +125,10 @@
     "slug": "trek-field-guide",
     "title": "Trek Field Guide",
     "liveUrl": "https://trek-field-guide.netlify.app/",
-    "summary": "My secondary project: a themed interface where I practiced balancing bold visual direction with readable navigation.",
+    "summary": "A visual side project where I pushed a strong theme without letting navigation or readability collapse.",
     "stack": ["React", "JavaScript", "Netlify"],
     "context": "I used this to sharpen UI craft while my main energy stayed on the bot. It is my cleanest visual-focused build.",
-    "demoHook": "Toggle density and mode to see where style helps exploration and where it hurts clarity.",
+    "demoHook": "Compare the calmer path and the overloaded path to see where style helps exploration and where it gets in the way.",
     "runtimePanels": [
       {
         "title": "Navigation Density",

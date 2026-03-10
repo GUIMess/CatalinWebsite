@@ -9,17 +9,17 @@ export function LabLogPage() {
   usePageMeta({
     title: "Build Feed | Catalin Siegling",
     description:
-      "Build log from an entry-level dev: shipped work, mistakes, and iteration notes.",
+      "Chronological build notes covering shipped work, mistakes, and iteration.",
     path: "/lab-log"
   });
 
   return (
     <div className="stack">
-      <section className="surface">
+      <section className="surface page-intro">
         <p className="eyebrow">Build Feed</p>
-        <h1>One-year bot journey: what I shipped, what broke, what I learned.</h1>
+        <h1>Recent changes, in order.</h1>
         <p>
-          No fake polish here. This is the timeline of real changes and lessons from the work above.
+          Short notes on what changed, what it taught me, and where it connects back to the larger system.
         </p>
       </section>
       <LogEntryList entries={sortedEntries} />

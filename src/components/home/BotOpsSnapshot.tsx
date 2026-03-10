@@ -131,11 +131,11 @@ export function BotOpsSnapshot() {
 
   return (
     <section className="surface">
-      <p className="eyebrow">Sanitized Production System</p>
-      <h2>Live alert bot architecture I built and run in production.</h2>
+      <p className="eyebrow">Runtime Model</p>
+      <h2>Push the bot pipeline and watch the operating tradeoffs move.</h2>
       <p>
-        Interactive map of the real stack design: ingestion, normalization, rules, and dispatch with retries and
-        fallback.
+        Change load, queue depth, dedupe strictness, and fallback behavior to see how latency, duplicate
+        risk, and missed-event risk shift.
       </p>
       <p className="muted">Evidence snapshot refreshed: {generatedAtLabel}</p>
 

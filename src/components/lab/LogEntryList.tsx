@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import type { LogEntry } from "../../types/content";
-import { copyBuildPost, downloadBuildPostCard } from "../../lib/buildPost";
 
 type LogEntryListProps = {
   entries: LogEntry[];
@@ -21,7 +20,6 @@ export function LogEntryList({ entries }: LogEntryListProps) {
   const [activeTheme, setActiveTheme] = useState<LogEntry["theme"] | "all">("all");
   const [activeStage, setActiveStage] = useState<LogEntry["stage"] | "all">("all");
   const [activeTool, setActiveTool] = useState<string>("all");
-  const [copiedId, setCopiedId] = useState<string>("");
 
   const availableTools = useMemo(() => {
     return Array.from(new Set(entries.flatMap((entry) => entry.tools))).sort();
@@ -39,18 +37,12 @@ export function LogEntryList({ entries }: LogEntryListProps) {
   const totalHours = filteredEntries.reduce((sum, entry) => sum + (entry.hours ?? 0), 0);
   const uniqueToolCount = new Set(filteredEntries.flatMap((entry) => entry.tools)).size;
 
-  const handleCopy = async (entry: LogEntry) => {
-    const success = await copyBuildPost(entry);
-    setCopiedId(success ? entry.id : `error-${entry.id}`);
-    window.setTimeout(() => setCopiedId(""), 1600);
-  };
-
   return (
     <section className="surface">
       <div className="split-header">
         <div>
-          <p className="eyebrow">Journey Dashboard</p>
-          <h2>Filter what I was working on, and how I was working.</h2>
+          <p className="eyebrow">Change Log</p>
+          <h2>Filter the timeline by theme, stage, or tool.</h2>
         </div>
       </div>
 
@@ -136,33 +128,26 @@ export function LogEntryList({ entries }: LogEntryListProps) {
         {filteredEntries.map((entry) => (
           <article key={entry.id} className="card log-card">
             <p className="tag">
-              {entry.date} · {entry.stage} · {entry.theme}
+              {entry.date} / {entry.stage} / {entry.theme}
             </p>
             <h3>{entry.build}</h3>
             <p>{entry.learned}</p>
             {entry.impact && <p className="muted">Impact: {entry.impact}</p>}
             <p className="muted">Tools: {entry.tools.join(", ")}</p>
-            <div className="button-row">
-              {entry.proofUrl && entry.proofLabel && (
+            {entry.proofUrl && entry.proofLabel && (
+              <div className="button-row">
                 <a className="inline-link" href={entry.proofUrl} target="_blank" rel="noreferrer">
                   {entry.proofLabel}
                 </a>
-              )}
-              <button className="inline-link button-link" onClick={() => void handleCopy(entry)} type="button">
-                {copiedId === entry.id ? "copied post" : "copy update post"}
-              </button>
-              <button className="inline-link button-link" onClick={() => downloadBuildPostCard(entry)} type="button">
-                export post card
-              </button>
-              {copiedId === `error-${entry.id}` ? <span className="muted">clipboard blocked</span> : null}
-            </div>
+              </div>
+            )}
           </article>
         ))}
       </div>
       {!filteredEntries.length && (
         <article className="card">
           <h3>No entries match these filters yet.</h3>
-          <p className="muted">Try broadening stage/theme/tool filters.</p>
+          <p className="muted">Try broadening the current filters.</p>
         </article>
       )}
     </section>

@@ -12,10 +12,13 @@ body,
 }
 
 body {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
-  color: var(--color-paper);
-  background: radial-gradient(circle at top left, #1a1a20, var(--color-ink) 50%);
-  line-height: 1.5;
+  font-family: "Newsreader", Georgia, serif;
+  color: var(--color-ink);
+  background:
+    radial-gradient(circle at top left, rgba(61, 116, 109, 0.1), transparent 26%),
+    radial-gradient(circle at 86% 8%, rgba(198, 221, 216, 0.44), transparent 28%),
+    linear-gradient(180deg, #faf7f1 0%, var(--color-paper) 48%, #ebe4d8 100%);
+  line-height: 1.6;
   text-rendering: optimizeLegibility;
 }
 
@@ -28,8 +31,24 @@ h1,
 h2,
 h3,
 h4,
-p {
+p,
+ul,
+ol {
   margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+button,
+input,
+textarea,
+nav,
+.brand,
+.tag,
+.eyebrow {
+  font-family: "Space Grotesk", "Avenir Next", sans-serif;
 }
 
 button,
@@ -44,6 +63,6 @@ code {
 }
 
 ::selection {
-  background: rgba(255, 77, 0, 0.3);
-  color: var(--color-paper);
+  background: rgba(61, 116, 109, 0.18);
+  color: var(--color-ink);
 }

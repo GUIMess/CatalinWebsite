@@ -1,26 +1,50 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getConfigValue } from "../../lib/runtimeConfig";
-
-const BOT_WS_URL =
-  getConfigValue("VITE_BOT_WS_URL") ??
-  "wss://web-production-a6a95.up.railway.app/live-updates";
 
 const BOT_URL =
   getConfigValue("VITE_BOT_URL") ??
   "https://web-production-a6a95.up.railway.app";
 
-type ConnectionStatus = "connecting" | "live" | "reconnecting" | "offline";
+const BOT_TELEMETRY_URL = `${BOT_URL.replace(/\/$/, "")}/api/public/portfolio-telemetry`;
+const pollIntervalMs = 30000;
 
-type BotSnapshot = {
-  uptime: number;
-  heapUsed: number;
-  heapTotal: number;
-  totalCommands: number;
-  errorRate: number;
-  cacheHitRate: number;
-  discordPing: number;
-  hourlyActivity: number[];
-  lastUpdated: number;
+const integerFormatter = new Intl.NumberFormat("en-US");
+const compactFormatter = new Intl.NumberFormat("en-US", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+
+type FeedStatus = "loading" | "live" | "degraded" | "stale" | "offline";
+
+type FeatureMixItem = {
+  key: string;
+  label: string;
+  count: number;
+  share: number;
+};
+
+type TelemetrySnapshot = {
+  status: "live" | "degraded";
+  dataMode: "full" | "limited";
+  generatedAt: number;
+  commands24h: number | null;
+  commands30d: number | null;
+  commandsAllTime: number | null;
+  newsPosts24h: number | null;
+  newsPosts30d: number | null;
+  activity24h: number[];
+  activity30d: number[];
+  avgResponseMs24h: number | null;
+  avgResponseMs30d: number | null;
+  avgResponseMsSinceRestart: number | null;
+  errorRate24h: number | null;
+  errorRate30d: number | null;
+  errorRateSinceRestart: number | null;
+  cacheHitRate: number | null;
+  discordPingMs: number | null;
+  lastActiveAt: number | null;
+  featureMix24h: FeatureMixItem[];
+  featureMix30d: FeatureMixItem[];
 };
 
 function toNumber(value: unknown): number | null {
@@ -36,93 +60,209 @@ function toNumber(value: unknown): number | null {
   return null;
 }
 
-function parseUptimeSeconds(value: unknown): number {
-  const direct = toNumber(value);
-  if (direct !== null) {
-    return Math.max(0, direct);
+function normalizePercent(value: unknown): number | null {
+  const numeric = toNumber(value);
+  if (numeric === null || numeric < 0) {
+    return null;
   }
 
-  if (value && typeof value === "object") {
-    const record = value as Record<string, unknown>;
-    const msValue = toNumber(record.ms);
-    if (msValue !== null) {
-      return Math.max(0, msValue / 1000);
-    }
-
-    const secondsValue = toNumber(record.seconds ?? record.sec ?? record.uptimeSeconds);
-    if (secondsValue !== null) {
-      return Math.max(0, secondsValue);
-    }
-  }
-
-  return 0;
-}
-
-function normalizeHeapBytes(value: unknown): number {
-  const raw = toNumber(value);
-  if (raw === null || raw <= 0) {
-    return 0;
-  }
-
-  // Some payloads report heap in MB, others in bytes.
-  if (raw < 16384) {
-    return raw * 1024 * 1024;
-  }
-
-  return raw;
-}
-
-function normalizePercent(value: unknown): number {
-  const raw = toNumber(value);
-  if (raw === null || raw < 0) {
-    return 0;
-  }
-
-  const scaled = raw <= 1 ? raw * 100 : raw;
+  const scaled = numeric <= 1 ? numeric * 100 : numeric;
   return Math.round(scaled * 10) / 10;
 }
 
-function formatUptime(seconds: number): string {
-  if (!seconds || seconds <= 0) return "—";
-  const d = Math.floor(seconds / 86400);
-  const h = Math.floor((seconds % 86400) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (d > 0) return `${d}d ${h}h ${m}m`;
-  if (h > 0) return `${h}h ${m}m`;
-  return `${m}m`;
+function normalizeSeries(values: unknown, length: number): number[] {
+  if (!Array.isArray(values)) {
+    return new Array(length).fill(0);
+  }
+
+  const next = values.slice(0, length).map((value) => Math.max(0, toNumber(value) ?? 0));
+  while (next.length < length) {
+    next.push(0);
+  }
+  return next;
 }
 
-function toMB(bytes: number): number {
-  return Math.round(bytes / 1024 / 1024);
+function parseTelemetry(payload: unknown): TelemetrySnapshot | null {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const data = payload as Record<string, unknown>;
+  const generatedAt = Date.parse(String(data.generatedAt ?? ""));
+  const featureMixRaw = Array.isArray(data.featureMix24h) ? data.featureMix24h : [];
+
+  return {
+    status: data.status === "degraded" ? "degraded" : "live",
+    dataMode: data.dataMode === "limited" ? "limited" : "full",
+    generatedAt: Number.isFinite(generatedAt) ? generatedAt : Date.now(),
+    commands24h: toNumber(data.commands24h),
+    commands30d: toNumber(data.commands30d),
+    commandsAllTime: toNumber(data.commandsAllTime),
+    newsPosts24h: toNumber(data.newsPosts24h),
+    newsPosts30d: toNumber(data.newsPosts30d),
+    activity24h: normalizeSeries(data.activity24h, 24),
+    activity30d: normalizeSeries(data.activity30d, 30),
+    avgResponseMs24h: toNumber(data.avgResponseMs24h),
+    avgResponseMs30d: toNumber(data.avgResponseMs30d),
+    avgResponseMsSinceRestart: toNumber(data.avgResponseMsSinceRestart),
+    errorRate24h: normalizePercent(data.errorRate24h),
+    errorRate30d: normalizePercent(data.errorRate30d),
+    errorRateSinceRestart: normalizePercent(data.errorRateSinceRestart),
+    cacheHitRate: normalizePercent(data.cacheHitRate),
+    discordPingMs: toNumber(data.discordPingMs),
+    lastActiveAt: Number.isFinite(Date.parse(String(data.lastActiveAt ?? "")))
+      ? Date.parse(String(data.lastActiveAt))
+      : null,
+    featureMix24h: featureMixRaw
+      .map((item) => {
+        if (!item || typeof item !== "object") {
+          return null;
+        }
+
+        const record = item as Record<string, unknown>;
+        const key = typeof record.key === "string" ? record.key : "";
+        const label = typeof record.label === "string" ? record.label : "";
+        const count = Math.max(0, toNumber(record.count) ?? 0);
+        const share = Math.max(0, normalizePercent(record.share) ?? 0);
+
+        if (!key || !label || count <= 0) {
+          return null;
+        }
+
+        return { key, label, count, share };
+      })
+      .filter((item): item is FeatureMixItem => item !== null),
+    featureMix30d: (Array.isArray(data.featureMix30d) ? data.featureMix30d : [])
+      .map((item) => {
+        if (!item || typeof item !== "object") {
+          return null;
+        }
+
+        const record = item as Record<string, unknown>;
+        const key = typeof record.key === "string" ? record.key : "";
+        const label = typeof record.label === "string" ? record.label : "";
+        const count = Math.max(0, toNumber(record.count) ?? 0);
+        const share = Math.max(0, normalizePercent(record.share) ?? 0);
+
+        if (!key || !label || count <= 0) {
+          return null;
+        }
+
+        return { key, label, count, share };
+      })
+      .filter((item): item is FeatureMixItem => item !== null),
+  };
 }
 
-function ActivitySparkline({ data }: Readonly<{ data: number[] }>) {
-  if (!data.length) return null;
+function formatInteger(value: number | null): string {
+  if (value === null) return "n/a";
+  return integerFormatter.format(Math.round(value));
+}
+
+function formatCompact(value: number | null): string {
+  if (value === null) return "n/a";
+  return compactFormatter.format(value);
+}
+
+function formatPercent(value: number | null): string {
+  if (value === null) return "n/a";
+  return `${value.toFixed(value >= 10 ? 0 : 1)}%`;
+}
+
+function formatMilliseconds(value: number | null): string {
+  if (value === null || value <= 0) return "n/a";
+  return `${Math.round(value)}ms`;
+}
+
+function formatSecondsAgo(value: number): string {
+  if (value < 60) return `${value}s ago`;
+  const minutes = Math.floor(value / 60);
+  return `${minutes}m ago`;
+}
+
+function formatTimeAgo(timestamp: number | null): string | null {
+  if (timestamp === null) return null;
+
+  const diffSeconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+  if (diffSeconds < 60) return `${diffSeconds}s ago`;
+  if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)}m ago`;
+  if (diffSeconds < 86400) return `${Math.floor(diffSeconds / 3600)}h ago`;
+  return `${Math.floor(diffSeconds / 86400)}d ago`;
+}
+
+function hasSignal(values: number[]): boolean {
+  return values.some((value) => value > 0);
+}
+
+function activitySummary(
+  activity: number[],
+  unit: "hour" | "day",
+  noun: { singular: string; plural: string },
+): string {
+  if (!activity.length) {
+    return "No recent activity shape available.";
+  }
+
+  const peak = Math.max(...activity, 0);
+  const activeHours = activity.filter((value) => value > 0).length;
+
+  if (peak <= 0) {
+    return "Quiet window in the last 24 hours.";
+  }
+
+  const label = unit === "day" ? "day" : "hour";
+  const labelPlural = activeHours === 1 ? label : `${label}s`;
+  const nounLabel = peak === 1 ? noun.singular : noun.plural;
+  return `${formatInteger(peak)} ${nounLabel} at the busiest ${label} across ${activeHours} active ${labelPlural}.`;
+}
+
+function ActivityBands({ data }: Readonly<{ data: number[] }>) {
+  if (!data.length || !hasSignal(data)) {
+    return null;
+  }
+
   const max = Math.max(...data, 1);
-  const bars = data.length;
-  const W = 300;
-  const H = 40;
-  const gap = 1.5;
-  const barW = (W - gap * (bars - 1)) / bars;
+  const width = data.length > 24 ? 520 : 420;
+  const height = 148;
+  const gap = data.length > 24 ? 4 : 6;
+  const barWidth = (width - gap * (data.length - 1)) / data.length;
 
   return (
     <svg
-      viewBox={`0 0 ${W} ${H}`}
-      className="activity-sparkline"
-      aria-label="24-hour command activity"
+      viewBox={`0 0 ${width} ${height}`}
+      className="telemetry-activity-chart"
+      aria-label="Command activity over the last 24 hours"
       preserveAspectRatio="none"
     >
-      {data.map((val, i) => {
-        const barH = Math.max(2, (val / max) * H);
-        const hour = i;
+      <defs>
+        <linearGradient id="telemetryBars" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#b7ddd6" />
+          <stop offset="100%" stopColor="#5a8c85" />
+        </linearGradient>
+      </defs>
+      {[0.25, 0.5, 0.75].map((step) => (
+        <line
+          key={step}
+          x1="0"
+          x2={width}
+          y1={height - height * step}
+          y2={height - height * step}
+          className="telemetry-grid-line"
+        />
+      ))}
+      {data.map((value, index) => {
+        const barHeight = value <= 0 ? 0 : Math.max(6, (value / max) * (height - 6));
+        const isPeak = value === max && max > 0;
+
         return (
           <rect
-            key={hour}
-            x={i * (barW + gap)}
-            y={H - barH}
-            width={barW}
-            height={barH}
-            className={val === max ? "spark-bar peak" : "spark-bar"}
+            key={`${index}-${value}`}
+            x={index * (barWidth + gap)}
+            y={height - barHeight}
+            width={barWidth}
+            height={barHeight}
+            rx="8"
+            className={isPeak ? "telemetry-activity-bar peak" : "telemetry-activity-bar"}
           />
         );
       })}
@@ -130,285 +270,288 @@ function ActivitySparkline({ data }: Readonly<{ data: number[] }>) {
   );
 }
 
-function statusLabel(status: ConnectionStatus): string {
-  if (status === "live") return "LIVE";
-  if (status === "connecting") return "CONNECTING";
-  if (status === "reconnecting") return "RECONNECTING";
-  return "OFFLINE";
+function statusLabel(status: FeedStatus): string {
+  if (status === "live") return "Live";
+  if (status === "degraded") return "Degraded";
+  if (status === "stale") return "Stale";
+  if (status === "offline") return "Offline";
+  return "Syncing";
 }
 
 export function LiveBotFeed() {
-  const [status, setStatus] = useState<ConnectionStatus>("connecting");
-  const [snapshot, setSnapshot] = useState<BotSnapshot | null>(null);
+  const [feedStatus, setFeedStatus] = useState<FeedStatus>("loading");
+  const [snapshot, setSnapshot] = useState<TelemetrySnapshot | null>(null);
   const [secondsAgo, setSecondsAgo] = useState(0);
-  const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimerRef = useRef<number | null>(null);
-  const offlineTimerRef = useRef<number | null>(null);
-  const attemptsRef = useRef(0);
-  const snapshotRef = useRef<BotSnapshot | null>(null);
-  const isMountedRef = useRef(true);
-  const intentionalCloseRef = useRef(false);
+  const snapshotRef = useRef<TelemetrySnapshot | null>(null);
 
-  const connect = useCallback(() => {
-    if (!isMountedRef.current) {
-      return;
-    }
-
-    if (wsRef.current && (wsRef.current.readyState === WebSocket.OPEN || wsRef.current.readyState === WebSocket.CONNECTING)) {
-      return;
-    }
-
-    intentionalCloseRef.current = false;
-    setStatus(attemptsRef.current > 0 ? "reconnecting" : "connecting");
-
-    const ws = new WebSocket(BOT_WS_URL);
-    wsRef.current = ws;
-
-    ws.onopen = () => {
-      attemptsRef.current = 0;
-      if (offlineTimerRef.current) {
-        clearTimeout(offlineTimerRef.current);
-        offlineTimerRef.current = null;
-      }
-    };
-
-    ws.onmessage = (event) => {
-      if (!isMountedRef.current) {
-        return;
-      }
-
-      try {
-        const msg = JSON.parse(event.data as string) as {
-          type: string;
-          data?: Record<string, unknown>;
-        };
-        if (msg.type !== "dashboard_update" || !msg.data) return;
-
-        const d = msg.data;
-        const overview = (d.overview ?? {}) as Record<string, unknown>;
-        const perf = (d.performance ?? {}) as Record<string, unknown>;
-        const mem = (perf.memory ?? {}) as Record<string, unknown>;
-        const cache = (perf.cache ?? {}) as Record<string, unknown>;
-        const activity = (d.activity ?? {}) as Record<string, unknown>;
-        const discord = (d.discord ?? {}) as Record<string, unknown>;
-        let hourlyRaw: unknown[] = [];
-        if (Array.isArray(activity.hourly)) {
-          hourlyRaw = activity.hourly;
-        } else if (Array.isArray(activity.hourlyActivity)) {
-          hourlyRaw = activity.hourlyActivity;
-        }
-
-        const cmdSum = Array.isArray(activity.commands)
-          ? (activity.commands as Record<string, unknown>[]).reduce(
-              (sum, c) => sum + (toNumber(c.count) ?? 0),
-              0
-            )
-          : 0;
-
-        const next: BotSnapshot = {
-          uptime: parseUptimeSeconds(overview.uptime ?? d.uptime),
-          heapUsed: normalizeHeapBytes(mem.heapUsed ?? mem.used ?? mem.usedMB),
-          heapTotal: normalizeHeapBytes(mem.heapTotal ?? mem.total ?? mem.totalMB),
-          totalCommands: toNumber(overview.totalCommands ?? overview.totalInteractions) || cmdSum,
-          errorRate: normalizePercent(overview.errorRate),
-          cacheHitRate: normalizePercent(cache.hitRate ?? cache.hitRatio),
-          discordPing: toNumber(discord.ping ?? discord.latency) ?? 0,
-          hourlyActivity: hourlyRaw.map((value) => toNumber(value) ?? 0),
-          lastUpdated: Date.now(),
-        };
-
-        snapshotRef.current = next;
-        if (offlineTimerRef.current) {
-          clearTimeout(offlineTimerRef.current);
-          offlineTimerRef.current = null;
-        }
-        setSnapshot(next);
-        setStatus("live");
-        setSecondsAgo(0);
-      } catch {
-        // ignore malformed messages
-      }
-    };
-
-    ws.onclose = () => {
-      if (wsRef.current === ws) {
-        wsRef.current = null;
-      }
-
-      if (!isMountedRef.current || intentionalCloseRef.current) {
-        return;
-      }
-
-      setStatus("reconnecting");
-      const delay = Math.min(1000 * Math.pow(2, attemptsRef.current), 30000);
-      attemptsRef.current++;
-      reconnectTimerRef.current = globalThis.setTimeout(connect, delay);
-    };
-
-    ws.onerror = () => {
-      ws.close();
-    };
-  }, []);
-
-  // Poll /health immediately on mount — gives users something to see while WS connects
   useEffect(() => {
-    isMountedRef.current = true;
     let cancelled = false;
 
-    const poll = async () => {
+    const sync = async () => {
       try {
-        const res = await fetch(`${BOT_URL}/health`);
-        if (!res.ok) throw new Error("unhealthy");
-        const data = (await res.json()) as Record<string, unknown>;
-        const memory = (data.memory ?? {}) as Record<string, unknown>;
-        if (cancelled) return;
+        const response = await fetch(BOT_TELEMETRY_URL, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`Telemetry request failed with ${response.status}`);
+        }
 
-        const fallback: BotSnapshot = {
-          uptime: parseUptimeSeconds(data.uptime ?? data.uptimeSeconds),
-          heapUsed: normalizeHeapBytes(memory.heapUsed),
-          heapTotal: normalizeHeapBytes(memory.heapTotal),
-          totalCommands: 0,
-          errorRate: 0,
-          cacheHitRate: 0,
-          discordPing: 0,
-          hourlyActivity: [],
-          lastUpdated: Date.now(),
+        const payload = (await response.json()) as {
+          success?: boolean;
+          data?: unknown;
         };
+        const nextSnapshot = parseTelemetry(payload.data);
 
-        // Only apply if WS hasn't already delivered richer data
-        if (!snapshotRef.current) {
-          snapshotRef.current = fallback;
-          setSnapshot(fallback);
-          setStatus("live");
+        if (!nextSnapshot) {
+          throw new Error("Telemetry payload was missing data");
         }
+
+        if (cancelled) {
+          return;
+        }
+
+        snapshotRef.current = nextSnapshot;
+        setSnapshot(nextSnapshot);
+        setFeedStatus(nextSnapshot.status === "degraded" ? "degraded" : "live");
+        setSecondsAgo(Math.floor((Date.now() - nextSnapshot.generatedAt) / 1000));
       } catch {
-        // Health endpoint unreachable — let WS timeout handle offline state
-        if (!cancelled && !snapshotRef.current) {
-          if (offlineTimerRef.current) {
-            clearTimeout(offlineTimerRef.current);
-          }
-          offlineTimerRef.current = globalThis.setTimeout(() => {
-            if (!cancelled && !snapshotRef.current) setStatus("offline");
-          }, 20000);
+        if (cancelled) {
+          return;
         }
+
+        setFeedStatus(snapshotRef.current ? "stale" : "offline");
       }
     };
 
-    void poll();
+    void sync();
+    const poller = globalThis.setInterval(() => {
+      void sync();
+    }, pollIntervalMs);
+
     return () => {
       cancelled = true;
-      if (offlineTimerRef.current) {
-        clearTimeout(offlineTimerRef.current);
-        offlineTimerRef.current = null;
-      }
+      clearInterval(poller);
     };
   }, []);
 
   useEffect(() => {
-    connect();
-    return () => {
-      isMountedRef.current = false;
-      intentionalCloseRef.current = true;
-      if (reconnectTimerRef.current) {
-        clearTimeout(reconnectTimerRef.current);
-        reconnectTimerRef.current = null;
-      }
-      if (offlineTimerRef.current) {
-        clearTimeout(offlineTimerRef.current);
-        offlineTimerRef.current = null;
-      }
-      wsRef.current?.close();
-      wsRef.current = null;
-    };
-  }, [connect]);
+    if (!snapshot) {
+      return;
+    }
 
-  // Tick "updated Xs ago"
-  useEffect(() => {
-    if (!snapshot) return;
     const ticker = globalThis.setInterval(() => {
-      setSecondsAgo(Math.floor((Date.now() - snapshot.lastUpdated) / 1000));
+      setSecondsAgo(Math.max(0, Math.floor((Date.now() - snapshot.generatedAt) / 1000)));
     }, 1000);
-    return () => clearInterval(ticker);
-  }, [snapshot?.lastUpdated]);
 
-  const memUsed = snapshot ? toMB(snapshot.heapUsed) : 0;
-  const memTotal = snapshot ? toMB(snapshot.heapTotal) : 0;
+    return () => clearInterval(ticker);
+  }, [snapshot?.generatedAt]);
+
+  const hasRollingCommands = (snapshot?.commands30d ?? 0) > 0;
+  const hasRollingNews = (snapshot?.newsPosts30d ?? 0) > 0;
+  const has24hResponse =
+    (snapshot?.avgResponseMs24h ?? 0) > 0 || snapshot?.errorRate24h !== null;
+  const hasRollingResponse =
+    (snapshot?.avgResponseMs30d ?? 0) > 0 || snapshot?.errorRate30d !== null;
+  const hasRuntimeResponse =
+    (snapshot?.avgResponseMsSinceRestart ?? 0) > 0 ||
+    snapshot?.errorRateSinceRestart !== null;
+  const commandsWindowHours =
+    snapshot && (snapshot.commands24h ?? 0) > 0 ? 24 : hasRollingCommands ? 30 * 24 : 24;
+  const newsWindowHours =
+    snapshot && (snapshot.newsPosts24h ?? 0) > 0 ? 24 : hasRollingNews ? 30 * 24 : 24;
+  const featureMix =
+    snapshot?.featureMix24h?.length ? snapshot.featureMix24h : snapshot?.featureMix30d ?? [];
+  const featureMixWindowHours = snapshot?.featureMix24h?.length ? 24 : 30 * 24;
+  const activity24h = snapshot?.activity24h ?? [];
+  const activity30d = snapshot?.activity30d ?? [];
+  const activityUses24h = hasSignal(activity24h);
+  const activityUses30d = !activityUses24h && hasSignal(activity30d);
+  const activity = activityUses24h ? activity24h : activityUses30d ? activity30d : [];
+  const activityRangeLabel = activityUses24h ? "24h activity shape" : "30d activity shape";
+  const activityStartLabel = activityUses24h ? "24h ago" : "30d ago";
+  const activityEndLabel = activityUses24h ? "now" : "today";
+  const activityHeading = activityUses24h ? "Activity rhythm" : "Activity cadence";
+  const lastActiveLabel = formatTimeAgo(snapshot?.lastActiveAt ?? null);
+  const featureMixTotal = featureMix.reduce((sum, feature) => sum + feature.count, 0);
+  const commandsValue =
+    commandsWindowHours === 24 ? snapshot?.commands24h ?? null : snapshot?.commands30d ?? snapshot?.commands24h ?? null;
+  const newsPostsValue =
+    newsWindowHours === 24 ? snapshot?.newsPosts24h ?? null : snapshot?.newsPosts30d ?? snapshot?.newsPosts24h ?? null;
+  const useTrackedUsageFallback =
+    (commandsValue ?? 0) <= 0 && featureMixWindowHours === 30 * 24 && featureMixTotal > 0;
+  const primaryUsageLabel = useTrackedUsageFallback
+    ? "tracked uses / 30d"
+    : `commands / ${commandsWindowHours === 24 ? "24h" : "30d"}`;
+  const primaryUsageValue = useTrackedUsageFallback ? featureMixTotal : commandsValue;
+  const activityNoun = useTrackedUsageFallback
+    ? { singular: "tracked interaction", plural: "tracked interactions" }
+    : { singular: "command", plural: "commands" };
+  const peakSummary = activitySummary(
+    activity,
+    activityUses24h ? "hour" : "day",
+    activityNoun,
+  );
+  const responseWindowLabel = has24hResponse
+    ? "24h"
+    : hasRollingResponse
+      ? "30d"
+      : hasRuntimeResponse
+        ? "since restart"
+        : "24h";
+  const avgResponseValue = has24hResponse
+    ? snapshot?.avgResponseMs24h ?? null
+    : hasRollingResponse
+      ? snapshot?.avgResponseMs30d ?? snapshot?.avgResponseMs24h ?? null
+      : hasRuntimeResponse
+        ? snapshot?.avgResponseMsSinceRestart ?? null
+        : null;
+  const errorRateValue = has24hResponse
+    ? snapshot?.errorRate24h ?? null
+    : hasRollingResponse
+      ? snapshot?.errorRate30d ?? snapshot?.errorRate24h ?? null
+      : hasRuntimeResponse
+        ? snapshot?.errorRateSinceRestart ?? null
+        : null;
+  const runtimeHealthLabel =
+    responseWindowLabel === "since restart"
+      ? "Live runtime counters"
+      : responseWindowLabel === "30d"
+        ? "Rolling 30-day response context"
+        : "Live surface checks";
 
   return (
-    <section className="surface live-bot-feed">
-      <div className="split-header">
-        <div>
-          <p className="eyebrow">Production Runtime</p>
-          <h2>The bot, right now.</h2>
-          <p>Direct read from the running system on Railway. No simulation.</p>
+    <section className="surface portfolio-telemetry" id="live-proof">
+      <div className="chapter-header telemetry-header">
+        <div className="chapter-index-block">
+          <span>01</span>
+          <small>Live proof</small>
         </div>
-        <div className="live-status-badge">
-          <span className={`live-dot ${status}`} aria-hidden="true" />
-          <span className="live-label">
-            {statusLabel(status)}
-          </span>
-          {snapshot && status === "live" && (
-            <span className="live-age">{secondsAgo}s ago</span>
-          )}
+        <div>
+          <p className="eyebrow">Live Telemetry</p>
+          <h2>Runtime proof that reads like a scene, not a dashboard.</h2>
+          <p className="chapter-copy">
+            Public-safe command rhythm, feature mix, and health signals from the production bot running in American
+            sports servers.
+          </p>
+        </div>
+        <div className={`telemetry-status telemetry-status-${feedStatus}`}>
+          <span className="telemetry-status-dot" aria-hidden="true" />
+          <span>{statusLabel(feedStatus)}</span>
+          {snapshot ? <span className="telemetry-status-age">{formatSecondsAgo(secondsAgo)}</span> : null}
         </div>
       </div>
 
       {snapshot ? (
-        <>
-          <div className="live-metrics-grid">
-            <article className="card live-metric-card">
-              <p className="tag">uptime</p>
-              <h3>{formatUptime(snapshot.uptime)}</h3>
-            </article>
-            <article className="card live-metric-card">
-              <p className="tag">heap</p>
-              <h3>
-                {memUsed}
-                <span className="muted"> / {memTotal} MB</span>
-              </h3>
-            </article>
-            {snapshot.totalCommands > 0 && (
-              <article className="card live-metric-card">
-                <p className="tag">commands run</p>
-                <h3>{snapshot.totalCommands.toLocaleString()}</h3>
+        <div className="telemetry-shell">
+          <div className="telemetry-stage">
+            <div className="telemetry-stage-topline">
+              <span>
+                {snapshot.dataMode === "limited"
+                  ? "Runtime signal only"
+                  : activityUses24h
+                    ? "24-hour production window"
+                    : "30-day rolling command window"}
+              </span>
+              <span>{activity.length ? peakSummary : lastActiveLabel ? `Last tracked ${lastActiveLabel}` : "Quiet window"}</span>
+            </div>
+
+            <div className="telemetry-statline" aria-label="Telemetry summary">
+              <article className="telemetry-stat telemetry-stat-primary">
+                <span>{primaryUsageLabel}</span>
+                <strong>{formatInteger(primaryUsageValue)}</strong>
               </article>
-            )}
-            {snapshot.cacheHitRate > 0 && (
-              <article className="card live-metric-card">
-                <p className="tag">cache hit rate</p>
-                <h3>{snapshot.cacheHitRate}%</h3>
+              <article className="telemetry-stat">
+                <span>all-time handled</span>
+                <strong>{formatCompact(snapshot.commandsAllTime)}</strong>
               </article>
-            )}
-            {snapshot.errorRate > 0 && (
-              <article className="card live-metric-card">
-                <p className="tag">error rate</p>
-                <h3>{snapshot.errorRate}%</h3>
+              <article className="telemetry-stat">
+                <span>{`news posts / ${newsWindowHours === 24 ? "24h" : "30d"}`}</span>
+                <strong>{formatInteger(newsPostsValue)}</strong>
               </article>
-            )}
-            {snapshot.discordPing > 0 && (
-              <article className="card live-metric-card">
-                <p className="tag">discord ping</p>
-                <h3>{snapshot.discordPing}ms</h3>
-              </article>
-            )}
+            </div>
+
+            <div className="telemetry-chart-card">
+              <div className="telemetry-chart-head">
+                <h3>{activityHeading}</h3>
+                <span>{activityRangeLabel}</span>
+              </div>
+              {activity.length ? (
+                <>
+                  <ActivityBands data={activity} />
+                  <div className="telemetry-chart-scale" aria-hidden="true">
+                    <span>{activityStartLabel}</span>
+                    <span>{activityEndLabel}</span>
+                  </div>
+                </>
+              ) : (
+                <p className="muted telemetry-empty-state">Tracked command activity is quiet right now.</p>
+              )}
+            </div>
           </div>
 
-          {snapshot.hourlyActivity.length > 0 && (
-            <article className="card live-activity-card">
-              <h3>Activity — last 24 hours</h3>
-              <p className="muted">
-                Command volume by hour. The shape tells you when this system matters.
-              </p>
-              <ActivitySparkline data={snapshot.hourlyActivity} />
+          <div className="telemetry-side">
+            <article className="telemetry-panel telemetry-health-panel">
+              <div className="telemetry-panel-head">
+                <h3>Runtime health</h3>
+                <span>{runtimeHealthLabel}</span>
+              </div>
+              <div className="telemetry-health-grid">
+                <div className="telemetry-health-item">
+                  <span>{`avg response / ${responseWindowLabel}`}</span>
+                  <strong>{formatMilliseconds(avgResponseValue)}</strong>
+                </div>
+                <div className="telemetry-health-item">
+                  <span>cache hit</span>
+                  <strong>{formatPercent(snapshot.cacheHitRate)}</strong>
+                </div>
+                <div className="telemetry-health-item">
+                  <span>{`error rate / ${responseWindowLabel}`}</span>
+                  <strong>{formatPercent(errorRateValue)}</strong>
+                </div>
+                <div className="telemetry-health-item">
+                  <span>discord ping</span>
+                  <strong>{formatMilliseconds(snapshot.discordPingMs)}</strong>
+                </div>
+              </div>
             </article>
-          )}
-        </>
+
+            <article className="telemetry-panel telemetry-feature-panel">
+              <div className="telemetry-panel-head">
+                <h3>Feature mix</h3>
+                <span>
+                  {featureMixWindowHours === 24 ? "What people are actually using" : "Rolling 30-day usage mix"}
+                </span>
+              </div>
+              {featureMix.length ? (
+                <div className="telemetry-feature-list">
+                  {featureMix.map((feature) => (
+                    <div className="telemetry-feature-row" key={feature.key}>
+                      <div className="telemetry-feature-copy">
+                        <span>{feature.label}</span>
+                        <strong>{formatPercent(feature.share)}</strong>
+                      </div>
+                      <div className="telemetry-feature-track" aria-hidden="true">
+                        <div
+                          className="telemetry-feature-fill"
+                          style={{ width: `${Math.max(feature.share, 8)}%` }}
+                        />
+                      </div>
+                      <small>{formatInteger(feature.count)} tracked interactions</small>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="muted telemetry-empty-state">Feature telemetry is quiet right now.</p>
+              )}
+            </article>
+          </div>
+        </div>
       ) : (
-        <p className="muted live-connecting-msg">
-          {status === "offline"
-            ? "Bot is currently offline or unreachable."
-            : "Connecting to production runtime…"}
-        </p>
+        <div className="telemetry-empty">
+          <p className="muted">
+            {feedStatus === "offline"
+              ? "The bot is unreachable right now."
+              : "Syncing live telemetry from the bot."}
+          </p>
+        </div>
       )}
     </section>
   );

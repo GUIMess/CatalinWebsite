@@ -153,11 +153,11 @@ export function IncidentSimulator() {
 
   return (
     <section className="surface">
-      <p className="eyebrow">Bot Incident Runbook</p>
-      <h2>Simulate real failures, then apply recovery moves.</h2>
+      <p className="eyebrow">Break It / Recover It</p>
+      <h2>Trigger a failure and see how the system holds together.</h2>
       <p>
-        This mirrors how I run incidents: detect state, choose a response path, and track the effect on delivery
-        health and delay.
+        No postmortem essay first. Cause damage, run the recovery move, and watch delivery health, delay,
+        and operator load change in real time.
       </p>
 
       <div className="button-row">

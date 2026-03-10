@@ -22,8 +22,8 @@ export function WorkProofPanel({ work }: WorkProofPanelProps) {
 
   return (
     <section className="surface">
-      <p className="eyebrow">Code-Backed Proof</p>
-      <h2>What this project actually contains</h2>
+      <p className="eyebrow">Source Trail</p>
+      <h2>What is in the build</h2>
 
       {work.proofStats?.length ? (
         <div className="proof-stat-grid">
@@ -39,7 +39,7 @@ export function WorkProofPanel({ work }: WorkProofPanelProps) {
       <div className="proof-notes-grid">
         {work.architectureNotes?.length ? (
           <article className="card">
-            <h3>Architecture Notes</h3>
+            <h3>Architecture</h3>
             <ul className="notes-list">
               {work.architectureNotes.map((note) => (
                 <li key={note}>{note}</li>
@@ -50,7 +50,7 @@ export function WorkProofPanel({ work }: WorkProofPanelProps) {
 
         {work.reliabilityNotes?.length ? (
           <article className="card">
-            <h3>Reliability Notes</h3>
+            <h3>Reliability</h3>
             <ul className="notes-list">
               {work.reliabilityNotes.map((note) => (
                 <li key={note}>{note}</li>
@@ -77,22 +77,22 @@ export function WorkProofPanel({ work }: WorkProofPanelProps) {
       {isFlagship ? (
         <div className="snapshot-grid">
           <article className="card">
-            <h3>Generated Evidence Feed</h3>
+            <h3>Generated source snapshot</h3>
             <p className="muted">Snapshot: {new Date(snapshot.generatedAt).toLocaleString("en-US")}</p>
             <ul className="notes-list">
               {snapshot.receipts.slice(0, 4).map((receipt) => (
                 <li key={`${receipt.file}-${receipt.line}`}>
-                  {receipt.label} · {receipt.file}:{receipt.line}
+                  {receipt.label} / {receipt.file}:{receipt.line}
                 </li>
               ))}
             </ul>
           </article>
           <article className="card">
-            <h3>Scheduler Loop Cadence</h3>
+            <h3>Fast scheduler loops</h3>
             <ul className="notes-list">
               {snapshot.schedulerLoops.slice(0, 8).map((loop) => (
                 <li key={loop.name}>
-                  {loop.name} · {loop.interval}
+                  {loop.name} / {loop.interval}
                 </li>
               ))}
             </ul>

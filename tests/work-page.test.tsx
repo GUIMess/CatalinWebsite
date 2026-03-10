@@ -17,7 +17,7 @@ describe("WorkPage", () => {
     );
 
     expect(screen.getByRole("heading", { name: "Project not found" })).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Production Discord Bot" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Production Sports Bot" })).not.toBeInTheDocument();
     expect(document.title).toBe("Project Not Found | Catalin Siegling");
     expect(document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex,nofollow");
   });

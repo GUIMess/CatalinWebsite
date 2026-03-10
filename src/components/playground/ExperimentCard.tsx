@@ -9,11 +9,17 @@ type ExperimentCardProps = {
 export function ExperimentCard({ experiment, active, onSelect }: ExperimentCardProps) {
   return (
     <article className={active ? "card experiment-select-card active" : "card experiment-select-card"}>
-      <p className="tag">{experiment.category}</p>
+      <div className="experiment-card-head">
+        <p className="tag">{experiment.category}</p>
+        <span className={`playground-status-pill playground-status-pill-${experiment.status}`}>{experiment.status}</span>
+      </div>
       <h3>{experiment.title}</h3>
       <p>{experiment.summary}</p>
+      <p className="muted experiment-card-question">{experiment.question}</p>
+      <p className="muted experiment-card-meta">Applied to {experiment.appliedTo}</p>
+      <p className="muted experiment-card-tools">{experiment.tools.join(" / ")}</p>
       <button className="inline-link button-link" type="button" onClick={() => onSelect(experiment)}>
-        {active ? "in workbench" : "open in workbench"}
+        {active ? "loaded" : "load experiment"}
       </button>
     </article>
   );

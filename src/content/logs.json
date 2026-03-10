@@ -16,7 +16,7 @@
     "id": "2026-03-06-a",
     "date": "2026-03-06",
     "build": "Replaced fake console visuals with a sanitized replay view tied to real incident patterns.",
-    "learned": "Showing the receipts is more convincing than a polished animation of nothing.",
+    "learned": "Concrete runtime behavior lands better than abstract polish.",
     "tools": ["React state", "Timeline UI", "Runtime notes"],
     "stage": "iterate",
     "theme": "ux",

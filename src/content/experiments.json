@@ -4,7 +4,20 @@
     "title": "Retry Backoff Tuner",
     "category": "ai-flow",
     "summary": "Tested retry windows to recover provider errors without creating API request storms.",
+    "question": "How aggressive can retry logic get before recovery turns into a second outage?",
     "result": "Exponential backoff + caps reduced failure cascades during outage windows.",
+    "appliedTo": "Provider recovery path for scores, rankings, and scheduled news pulls.",
+    "status": "shipped",
+    "controls": {
+      "a": "Retry depth",
+      "b": "Base delay",
+      "flag": "Jitter"
+    },
+    "signals": [
+      "Burst risk climbs fast when retries stack before provider health recovers.",
+      "Base delay mattered more than max retry count once outages crossed the first minute.",
+      "Jitter kept concurrent workers from syncing themselves into request storms."
+    ],
     "tools": ["Node.js", "Retry logic", "Telemetry"],
     "featured": true
   },
@@ -13,7 +26,20 @@
     "title": "Cache TTL Ladder",
     "category": "ui",
     "summary": "Compared short/medium/long TTL mixes across live scores, schedules, and rankings.",
+    "question": "Which TTL mix keeps the feed fresh without hammering the upstream APIs?",
     "result": "Type-specific TTL rules improved freshness without hammering upstream APIs.",
+    "appliedTo": "Read paths for live scores, rankings, schedules, and generated scoreboards.",
+    "status": "shipped",
+    "controls": {
+      "a": "TTL window",
+      "b": "Read traffic",
+      "flag": "Prewarm cache"
+    },
+    "signals": [
+      "Short TTLs were fine for scores but wasted budget on slower-moving standings data.",
+      "Prewarming mattered most during burst windows rather than normal traffic.",
+      "The right answer was not one TTL, but a ladder per content type."
+    ],
     "tools": ["Redis", "Cache policy", "Runtime metrics"],
     "featured": true
   },
@@ -22,7 +48,20 @@
     "title": "Scheduler Heartbeat View",
     "category": "motion",
     "summary": "Built a visual pulse for scheduler health to detect stale jobs before users notice.",
+    "question": "What is the fastest way to tell when automation is technically alive but already drifting?",
     "result": "Heartbeat + stale thresholds made automation failures easier to catch and recover.",
+    "appliedTo": "Scheduler health surface for background posting and queue-driven automations.",
+    "status": "shipped",
+    "controls": {
+      "a": "Heartbeat age",
+      "b": "Stale threshold",
+      "flag": "Auto-heal"
+    },
+    "signals": [
+      "A stale heartbeat reads more clearly than raw uptime when jobs silently stop doing useful work.",
+      "Health thresholds need context; one global threshold created noisy false alarms.",
+      "Auto-heal only helped once the stale state was obvious enough to trust."
+    ],
     "tools": ["WebSocket", "Health checks", "Dashboard UI"],
     "featured": true
   },
@@ -31,7 +70,20 @@
     "title": "Queue Burst Sim",
     "category": "motion",
     "summary": "Simulated game-day burst load and tuned worker throughput vs queue depth.",
+    "question": "How much burst traffic can the worker pool absorb before jitter becomes visible?",
     "result": "Queue smoothing lowered delivery jitter during traffic spikes.",
+    "appliedTo": "Worker allocation, priority routing, and queue smoothing during peak traffic windows.",
+    "status": "active",
+    "controls": {
+      "a": "Incoming jobs",
+      "b": "Worker throughput",
+      "flag": "Priority routing"
+    },
+    "signals": [
+      "Backlog shape mattered more than raw queue size when judging the user-visible impact.",
+      "Priority routing helped when the queue was only slightly behind, not when it was already overwhelmed.",
+      "Worker count alone was less useful than smoother dispatch behavior."
+    ],
     "tools": ["Bull", "Redis", "Load simulation"]
   },
   {
@@ -39,7 +91,20 @@
     "title": "Event Fingerprint Audit",
     "category": "ui",
     "summary": "Tested multiple fingerprint strategies against messy provider event payloads.",
+    "question": "How do you dedupe noisy upstream events without suppressing real updates?",
     "result": "Hybrid fingerprints reduced duplicates without losing important edge-case updates.",
+    "appliedTo": "Event normalization and replay handling for live update ingestion.",
+    "status": "shipped",
+    "controls": {
+      "a": "Fingerprint strictness",
+      "b": "Payload variance",
+      "flag": "Fallback keys"
+    },
+    "signals": [
+      "Strict hashes looked clean until providers changed field order or omitted secondary IDs.",
+      "Fallback keys rescued edge cases but quickly raised duplicate risk if left too broad.",
+      "Replay testing found the dangerous failures faster than production logs did."
+    ],
     "tools": ["Data normalization", "Hashing", "Replay tests"]
   },
   {
@@ -47,7 +112,41 @@
     "title": "Dashboard Auth Flow",
     "category": "ai-flow",
     "summary": "Hardened admin flow with session validation, CSRF token rotation, and role gates.",
+    "question": "How much auth hardening can the admin surface take before operators stop using it cleanly?",
     "result": "Admin endpoints became safer while keeping ops workflows usable.",
+    "appliedTo": "Operator dashboard auth, privileged routes, and admin-only mutations.",
+    "status": "shipped",
+    "controls": {
+      "a": "Session TTL",
+      "b": "Attempt rate",
+      "flag": "CSRF rotation"
+    },
+    "signals": [
+      "Short sessions improved safety but created friction during incident response.",
+      "Role gates mattered more than extra login friction once inside the dashboard.",
+      "Token rotation was only useful once the session path itself was made explicit."
+    ],
     "tools": ["Express", "RBAC", "CSRF", "Session store"]
+  },
+  {
+    "id": "ops-depth-map",
+    "title": "Ops Depth Map",
+    "category": "3d",
+    "summary": "Tried a layered depth map for queue pressure, stale jobs, and degraded services in one frame.",
+    "question": "Can a more spatial incident view make operator state clearer, or does it just look clever?",
+    "result": "The depth treatment was memorable, but flat contrast cues explained incidents faster.",
+    "appliedTo": "Operator experiments around incident visibility and queue-state storytelling.",
+    "status": "exploratory",
+    "controls": {
+      "a": "Depth exaggeration",
+      "b": "Signal density",
+      "flag": "Layer labels"
+    },
+    "signals": [
+      "Depth added novelty, but dense overlays increased read time under pressure.",
+      "Labeling made the experiment usable; without it, the visualization became decoration.",
+      "The experiment still paid off because its contrast cues carried over into flatter runtime views."
+    ],
+    "tools": ["SVG", "CSS perspective", "Dashboard UI"]
   }
 ]

@@ -10,7 +10,16 @@ export type Experiment = {
   title: string;
   category: "motion" | "ui" | "ai-flow" | "3d";
   summary: string;
+  question: string;
   result: string;
+  appliedTo: string;
+  status: "shipped" | "active" | "exploratory";
+  controls: {
+    a: string;
+    b: string;
+    flag: string;
+  };
+  signals: string[];
   tools: string[];
   featured?: boolean;
 };
