@@ -2563,13 +2563,13 @@
 }
 
 .top-nav nav {
-  gap: 0.78rem;
+  gap: 0.66rem;
 }
 
 .nav-link {
   text-transform: none;
   letter-spacing: 0.02rem;
-  font-size: 0.72rem;
+  font-size: 0.65rem;
 }
 
 .nav-link::after {
