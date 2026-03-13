@@ -108,19 +108,18 @@ export function LogEntryList({ entries }: LogEntryListProps) {
         </div>
 
         <div className="button-row">
-          <button className={activeTool === "all" ? "chip active" : "chip"} onClick={() => setActiveTool("all")} type="button">
-            all tools
-          </button>
-          {availableTools.map((tool) => (
-            <button
-              key={tool}
-              className={activeTool === tool ? "chip active" : "chip"}
-              onClick={() => setActiveTool(tool)}
-              type="button"
-            >
-              {tool}
-            </button>
-          ))}
+          <select
+            className="chip-select"
+            value={activeTool}
+            onChange={(e) => setActiveTool(e.target.value)}
+          >
+            <option value="all">All tools</option>
+            {availableTools.map((tool) => (
+              <option key={tool} value={tool}>
+                {tool}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
