@@ -169,8 +169,9 @@ function formatPercent(value: number | null): string {
   return `${value.toFixed(value >= 10 ? 0 : 1)}%`;
 }
 
-function formatMilliseconds(value: number | null): string {
+function formatMilliseconds(value: number | null, maxReasonable = 60000): string {
   if (value === null || value <= 0) return "n/a";
+  if (value > maxReasonable) return "n/a";
   return `${Math.round(value)}ms`;
 }
 
@@ -376,9 +377,9 @@ export function LiveBotFeed() {
   const newsPostsValue =
     newsWindowHours === 24 ? snapshot?.newsPosts24h ?? null : snapshot?.newsPosts30d ?? snapshot?.newsPosts24h ?? null;
   const useTrackedUsageFallback =
-    (commandsValue ?? 0) <= 0 && featureMixWindowHours === 30 * 24 && featureMixTotal > 0;
+    (commandsValue ?? 0) <= 0 && featureMixTotal > 0;
   const primaryUsageLabel = useTrackedUsageFallback
-    ? "tracked uses / 30d"
+    ? `tracked uses / ${featureMixWindowHours === 24 ? "24h" : "30d"}`
     : `commands / ${commandsWindowHours === 24 ? "24h" : "30d"}`;
   const primaryUsageValue = useTrackedUsageFallback ? featureMixTotal : commandsValue;
   const activityNoun = useTrackedUsageFallback
