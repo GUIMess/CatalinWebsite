@@ -27,8 +27,8 @@ describe("control accessibility", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: "ui" })).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByRole("button", { name: "motion" })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("button", { name: "clarity" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "timing" })).toHaveAttribute("aria-pressed", "false");
   });
 
   it("labels the log tool filter and exposes toggle state", () => {

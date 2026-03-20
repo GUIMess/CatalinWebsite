@@ -1,11 +1,5 @@
 import type { Experiment } from "../../types/content";
-
-const categoryLabels: Record<Experiment["category"], string> = {
-  motion: "motion",
-  ui: "ui",
-  "ai-flow": "ai-flow",
-  "3d": "3d"
-};
+import { playgroundCategoryLabels } from "../../lib/playground";
 
 type ExperimentFilterBarProps = {
   active: Experiment["category"] | "all";
@@ -22,7 +16,7 @@ export function ExperimentFilterBar({ active, categories, onSelect }: Experiment
         onClick={() => onSelect("all")}
         aria-pressed={active === "all"}
       >
-        all
+        all labs
       </button>
       {categories.map((category) => (
         <button
@@ -32,7 +26,7 @@ export function ExperimentFilterBar({ active, categories, onSelect }: Experiment
           onClick={() => onSelect(category)}
           aria-pressed={active === category}
         >
-          {categoryLabels[category]}
+          {playgroundCategoryLabels[category]}
         </button>
       ))}
     </div>

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import type { Experiment } from "../../types/content";
+import { playgroundStatusLabels } from "../../lib/playground";
 import { clamp } from "../../lib/math";
+import type { Experiment } from "../../types/content";
 
 type ExperimentWorkbenchProps = {
   experiment: Experiment | null;
@@ -12,9 +13,13 @@ type OutputMetric = {
   value: string;
 };
 
+type WorkbenchTone = "steady" | "warning" | "curious";
+
 type WorkbenchOutput = {
   title: string;
+  headline: string;
   recommendation: string;
+  tone: WorkbenchTone;
   metrics: OutputMetric[];
   visual: ReactNode;
 };
@@ -32,6 +37,7 @@ function buildRetryOutput(a: number, b: number, flag: boolean): WorkbenchOutput 
   const attempts = Array.from({ length: retries }, (_, index) => {
     const rawDelay = Math.round(baseDelay * Math.pow(2, index));
     const displayedDelay = flag ? Math.round(rawDelay * (index % 2 === 0 ? 0.92 : 1.08)) : rawDelay;
+
     return {
       label: `attempt ${index + 1}`,
       delay: displayedDelay,
@@ -39,12 +45,25 @@ function buildRetryOutput(a: number, b: number, flag: boolean): WorkbenchOutput 
     };
   });
 
+  let tone: WorkbenchTone = "steady";
+  let headline = "This curve probes recovery without dogpiling the provider.";
+  let recommendation = "Backoff is buying time instead of turning a provider wobble into your outage.";
+
+  if (burstRisk > 58) {
+    tone = "warning";
+    headline = "You are retrying into the outage.";
+    recommendation = "The loop is too eager. Add more spacing or jitter before recovery traffic becomes self-inflicted load.";
+  } else if (burstRisk > 38) {
+    tone = "curious";
+    headline = "The shape is plausible, but still noisy.";
+    recommendation = "This might survive short outages, but concurrent workers can still bunch up during recovery.";
+  }
+
   return {
     title: "Retry Backoff Tuner",
-    recommendation:
-      burstRisk > 50
-        ? "Retry policy is too aggressive for unstable upstreams."
-        : "Backoff curve looks safe for burst outages.",
+    headline,
+    recommendation,
+    tone,
     metrics: [
       { label: "Retries", value: `${retries}` },
       { label: "Base delay", value: `${baseDelay}ms` },
@@ -101,14 +120,29 @@ function buildCacheOutput(a: number, b: number, flag: boolean): WorkbenchOutput 
     }
   ];
 
+  let tone: WorkbenchTone = "steady";
+  let headline = "Freshness and load are finally negotiating.";
+  let recommendation = "This ladder keeps the fast surfaces feeling live without needlessly hammering the slower ones.";
+
+  if (freshness < 55) {
+    tone = "warning";
+    headline = "The feed will feel stale before the infra calms down.";
+    recommendation = "The TTL is too forgiving for live surfaces. Users will notice the lag long before the API bill improves.";
+  } else if (apiLoad > 65) {
+    tone = "warning";
+    headline = "Freshness is fine, but the API bill is doing the screaming.";
+    recommendation = "You are buying freshness with too many reads. Increase the TTL or reduce fanout on slower content.";
+  } else if (freshness < 72 || apiLoad > 48) {
+    tone = "curious";
+    headline = "This is close, but still too blunt.";
+    recommendation = "It works, but the ladder still needs more surface-specific nuance before it feels trustworthy.";
+  }
+
   return {
     title: "Cache TTL Ladder",
-    recommendation:
-      freshness < 55
-        ? "TTL is too high for live updates."
-        : apiLoad > 65
-          ? "API pressure is too high; increase TTL or reduce fanout."
-          : "Freshness and API load are in a healthy range.",
+    headline,
+    recommendation,
+    tone,
     metrics: [
       { label: "TTL", value: `${ttl}s` },
       { label: "Traffic", value: `${traffic}` },
@@ -156,6 +190,7 @@ function buildHeartbeatOutput(a: number, b: number, flag: boolean): WorkbenchOut
   const stale = heartbeatAge > staleThreshold || !flag;
   const bars = Array.from({ length: 8 }, (_, index) => {
     const height = clamp(((index % 3) + 1) * 18 + (index === 6 ? heartbeatAge / 20 : 0), 18, 96);
+
     return {
       id: index,
       height,
@@ -163,11 +198,25 @@ function buildHeartbeatOutput(a: number, b: number, flag: boolean): WorkbenchOut
     };
   });
 
+  let tone: WorkbenchTone = "steady";
+  let headline = "The heartbeat is boring, which is what you want.";
+  let recommendation = "The scheduler looks healthy and the stale threshold still leaves room for real recovery.";
+
+  if (stale) {
+    tone = "warning";
+    headline = "The scheduler is technically up and already lying.";
+    recommendation = "Mark the job stale, degrade the status, and trigger the restart path before users discover the drift for you.";
+  } else if (heartbeatAge > staleThreshold * 0.7) {
+    tone = "curious";
+    headline = "You are close to stale, but still believable.";
+    recommendation = "The job is alive, but the confidence margin is getting thin enough that the threshold may still be too generous.";
+  }
+
   return {
     title: "Scheduler Heartbeat View",
-    recommendation: stale
-      ? "Marked stale: trigger restart path and degrade status."
-      : "Heartbeat is healthy within threshold.",
+    headline,
+    recommendation,
+    tone,
     metrics: [
       { label: "Heartbeat age", value: `${heartbeatAge}ms` },
       { label: "Stale threshold", value: `${staleThreshold}ms` },
@@ -202,14 +251,25 @@ function buildQueueOutput(a: number, b: number, flag: boolean): WorkbenchOutput 
   const incomingBlocks = clamp(Math.round(incoming / 32), 2, 7);
   const throughputBlocks = clamp(Math.round(throughput / 34), 2, 7);
 
+  let tone: WorkbenchTone = "steady";
+  let headline = "The queue can absorb the burst without looking sloppy.";
+  let recommendation = "Dispatch and routing are keeping the hot path ahead of the backlog.";
+
+  if (backlogDelta > 20) {
+    tone = "warning";
+    headline = "Users will feel this queue before you do.";
+    recommendation = "Backlog will compound fast. Either add worker capacity or shed the non-critical jobs instead of pretending the queue is fine.";
+  } else if (backlogDelta > 0) {
+    tone = "curious";
+    headline = "The queue is slipping, but not yet embarrassing.";
+    recommendation = "This still works during small bursts, but the lag is growing in a way users will start to notice.";
+  }
+
   return {
     title: "Queue Burst Sim",
-    recommendation:
-      backlogDelta > 20
-        ? "Backlog will grow fast: add workers or shed non-critical jobs."
-        : backlogDelta > 0
-          ? "Slight queue growth: watch burst windows."
-          : "Throughput can absorb current incoming rate.",
+    headline,
+    recommendation,
+    tone,
     metrics: [
       { label: "Incoming jobs/min", value: `${incoming}` },
       { label: "Worker throughput/min", value: `${throughput}` },
@@ -280,14 +340,29 @@ function buildFingerprintOutput(a: number, b: number, flag: boolean): WorkbenchO
     }
   ];
 
+  let tone: WorkbenchTone = "steady";
+  let headline = "This is strict enough without getting precious.";
+  let recommendation = "The dedupe catches the spam while still leaving enough room for ugly real-world events to pass through.";
+
+  if (missRate > 22) {
+    tone = "warning";
+    headline = "The dedupe is eating real events.";
+    recommendation = "The filter is too strict. Valid updates are getting suppressed along with the duplicates.";
+  } else if (duplicateRate > 30) {
+    tone = "warning";
+    headline = "Spam still leaks through the filter.";
+    recommendation = "The keys are still too loose. Tighten the fingerprint before duplicate events start reading like product bugs.";
+  } else if (duplicateRate > 18 || missRate > 12) {
+    tone = "curious";
+    headline = "Close, but the edge cases still matter.";
+    recommendation = "This is nearly balanced, but replay weirdness can still push the system into either noise or over-suppression.";
+  }
+
   return {
     title: "Event Fingerprint Audit",
-    recommendation:
-      missRate > 22
-        ? "Fingerprinting is too strict; likely suppressing valid events."
-        : duplicateRate > 30
-          ? "Duplicate risk still too high; tighten keys."
-          : "Dedupe profile looks balanced.",
+    headline,
+    recommendation,
+    tone,
     metrics: [
       { label: "Strictness", value: `${strictness}` },
       { label: "Payload variance", value: `${payloadVariance}` },
@@ -324,12 +399,25 @@ function buildAuthOutput(a: number, b: number, flag: boolean): WorkbenchOutput {
     { label: "role gate", state: abuseRisk > 55 ? "warn" : "good", detail: "admin-only route" }
   ];
 
+  let tone: WorkbenchTone = "steady";
+  let headline = "Security friction is doing its job without wrecking ops.";
+  let recommendation = "The admin path is reasonably hard to abuse while still being usable during incident response.";
+
+  if (abuseRisk > 50) {
+    tone = "warning";
+    headline = "The admin path is too easy to abuse.";
+    recommendation = "Raise the bar with stricter session and CSRF controls before privileged routes become the soft spot.";
+  } else if (abuseRisk > 30) {
+    tone = "curious";
+    headline = "Safer, but still leaning on good behavior.";
+    recommendation = "The flow is better than default, but it still trusts operators to behave perfectly under pressure.";
+  }
+
   return {
     title: "Dashboard Auth Flow",
-    recommendation:
-      abuseRisk > 50
-        ? "Risk is high: enforce stricter session/CSRF controls."
-        : "Auth surface risk is manageable for current traffic.",
+    headline,
+    recommendation,
+    tone,
     metrics: [
       { label: "Session TTL", value: `${sessionTtl} min` },
       { label: "Login attempt rate", value: `${attemptRate}` },
@@ -365,12 +453,21 @@ function buildDepthOutput(a: number, b: number, flag: boolean): WorkbenchOutput 
     { label: "cache", signal: `${Math.round(50 + (100 - density) * 0.3)}% warm`, color: "cache", z: Math.round(depth * 0.95) }
   ];
 
+  let tone: WorkbenchTone = "curious";
+  let headline = "A couple of contrast cues survive, but the 3d framing still slows the read.";
+  let recommendation = "The useful takeaway is not the depth effect. It is the contrast and labeling discipline the experiment forced into the flatter runtime views.";
+
+  if (!flag || density > 72) {
+    tone = "warning";
+    headline = "It looks interesting and explains nothing fast enough.";
+    recommendation = "Under pressure, the depth effect is just friction. Labels help, but they do not rescue a view that takes longer to trust.";
+  }
+
   return {
     title: "Ops Depth Map",
-    recommendation:
-      flag
-        ? "The layered view gets much more usable once each slice is explicitly labeled."
-        : "Without labels, the depth effect becomes interesting but harder to trust under pressure.",
+    headline,
+    recommendation,
+    tone,
     metrics: [
       { label: "Depth exaggeration", value: `${depth}` },
       { label: "Signal density", value: `${density}` },
@@ -431,13 +528,19 @@ function buildExperimentOutput(experiment: Experiment, a: number, b: number, fla
     default:
       return {
         title: experiment.title,
+        headline: "The lab is loaded, but it still needs a stronger readout.",
         recommendation: experiment.result,
+        tone: "curious",
         metrics: [
           { label: experiment.controls.a, value: `${a}` },
           { label: experiment.controls.b, value: `${b}` },
           { label: experiment.controls.flag, value: flag ? "on" : "off" }
         ],
-        visual: <div className="workbench-visual-shell"><p>No visual stage available yet.</p></div>
+        visual: (
+          <div className="workbench-visual-shell">
+            <p>No visual stage available yet.</p>
+          </div>
+        )
       };
   }
 }
@@ -446,36 +549,39 @@ export function ExperimentWorkbench({ experiment }: ExperimentWorkbenchProps) {
   const [a, setA] = useState(50);
   const [b, setB] = useState(50);
   const [flag, setFlag] = useState(true);
-  const [profile, setProfile] = useState<"balanced" | "stress" | "safe" | "custom">("balanced");
+  const [profile, setProfile] = useState<"start" | "break" | "rescue" | "surprise" | "custom">("start");
 
   useEffect(() => {
-    setProfile("balanced");
+    setProfile("start");
     setA(52);
     setB(48);
     setFlag(true);
   }, [experiment?.id]);
 
-  const applyProfile = (next: "balanced" | "stress" | "safe") => {
+  const applyProfile = (next: "start" | "break" | "rescue") => {
     setProfile(next);
-    if (next === "stress") {
+
+    if (next === "break") {
       setA(87);
       setB(82);
       setFlag(false);
       return;
     }
-    if (next === "safe") {
-      setA(42);
-      setB(33);
+
+    if (next === "rescue") {
+      setA(36);
+      setB(32);
       setFlag(true);
       return;
     }
+
     setA(52);
     setB(48);
     setFlag(true);
   };
 
   const randomizeState = () => {
-    setProfile("custom");
+    setProfile("surprise");
     setA(Math.round(Math.random() * 100));
     setB(Math.round(Math.random() * 100));
     setFlag(Math.random() > 0.5);
@@ -485,55 +591,100 @@ export function ExperimentWorkbench({ experiment }: ExperimentWorkbenchProps) {
     if (!experiment) {
       return {
         title: "Select an experiment",
-        recommendation: "Pick a card to load the workbench.",
+        headline: "Pick a lab to load a real readout.",
+        recommendation: "The point is to see where the decision flips, not to admire a widget.",
+        tone: "curious" as WorkbenchTone,
         metrics: [] as OutputMetric[],
         visual: null
       };
     }
+
     return buildExperimentOutput(experiment, a, b, flag);
   }, [a, b, flag, experiment]);
 
   if (!experiment) {
     return (
       <article className="card playground-workbench">
-        <h3>Select an experiment</h3>
+        <div className="playground-workbench-head">
+          <div>
+            <p className="tag">Interactive Lab</p>
+            <h3>{output.title}</h3>
+            <p className="playground-workbench-intro">{output.recommendation}</p>
+          </div>
+        </div>
       </article>
     );
   }
 
   return (
     <article key={experiment.id} className="card playground-workbench panel-enter">
-      <div className="experiment-card-head">
-        <p className="tag">{experiment.category} experiment</p>
-        <span className={`playground-status-pill playground-status-pill-${experiment.status}`}>{experiment.status}</span>
+      <div className="playground-workbench-head">
+        <div>
+          <div className="experiment-card-head">
+            <p className="tag">Interactive Lab</p>
+            <span className={`playground-status-pill playground-status-pill-${experiment.status}`}>
+              {playgroundStatusLabels[experiment.status]}
+            </span>
+          </div>
+          <h3>{output.title}</h3>
+          <p className="playground-workbench-intro">{experiment.summary}</p>
+        </div>
       </div>
-      <h3>{output.title}</h3>
-      <p>{experiment.summary}</p>
-      <p className="workbench-question">{experiment.question}</p>
 
-      <div className="playground-focus-inline">
-        <div className="playground-focus-inline-card">
-          <span>Applied to</span>
-          <strong>{experiment.appliedTo}</strong>
-        </div>
-        <div className="playground-focus-inline-card">
-          <span>What changed</span>
-          <strong>{experiment.result}</strong>
-        </div>
+      <section className={`playground-verdict playground-verdict-${output.tone}`} aria-live="polite">
+        <p className="tag">Current Read</p>
+        <h4>{output.headline}</h4>
+        <p>{output.recommendation}</p>
+      </section>
+
+      <div className="playground-workbench-story">
+        <article className="playground-readout-card">
+          <p className="tag">Why this deserved a test</p>
+          <h4>{experiment.question}</h4>
+          <p className="playground-workbench-note">Good labs make one risky product decision easier to trust.</p>
+        </article>
+
+        <article className={`playground-readout-card playground-readout-card-${output.tone}`}>
+          <p className="tag">What survived into the real product</p>
+          <h4>{experiment.result}</h4>
+          <p className="playground-workbench-note">Applied to {experiment.appliedTo}</p>
+        </article>
       </div>
+
+      <p className="playground-workbench-note">Use the presets first. Then drag the controls until the verdict changes.</p>
 
       <div className="button-row compact workbench-presets">
-        <button className={profile === "balanced" ? "chip active" : "chip"} onClick={() => applyProfile("balanced")} type="button">
-          balanced
+        <button
+          className={profile === "start" ? "chip active" : "chip"}
+          onClick={() => applyProfile("start")}
+          type="button"
+          aria-pressed={profile === "start"}
+        >
+          start here
         </button>
-        <button className={profile === "stress" ? "chip active danger" : "chip"} onClick={() => applyProfile("stress")} type="button">
-          stress
+        <button
+          className={profile === "break" ? "chip active danger" : "chip"}
+          onClick={() => applyProfile("break")}
+          type="button"
+          aria-pressed={profile === "break"}
+        >
+          break it
         </button>
-        <button className={profile === "safe" ? "chip active" : "chip"} onClick={() => applyProfile("safe")} type="button">
-          safe
+        <button
+          className={profile === "rescue" ? "chip active" : "chip"}
+          onClick={() => applyProfile("rescue")}
+          type="button"
+          aria-pressed={profile === "rescue"}
+        >
+          rescue it
         </button>
-        <button className={profile === "custom" ? "chip active danger" : "chip"} onClick={randomizeState} type="button">
-          custom random
+        <button
+          className={profile === "surprise" ? "chip active danger" : "chip"}
+          onClick={randomizeState}
+          type="button"
+          aria-pressed={profile === "surprise"}
+        >
+          surprise me
         </button>
       </div>
 
@@ -586,33 +737,37 @@ export function ExperimentWorkbench({ experiment }: ExperimentWorkbenchProps) {
               setFlag((previous) => !previous);
             }}
             type="button"
+            aria-pressed={flag}
           >
-            toggle
+            {flag ? "enabled" : "disabled"}
           </button>
         </div>
       </div>
 
       {output.visual}
 
-      <div className="workbench-signal-list">
-        {experiment.signals.map((signal) => (
-          <article className="workbench-signal-card" key={signal}>
-            <p>{signal}</p>
+      <div className="playground-metric-grid">
+        {output.metrics.map((metric) => (
+          <article className="playground-metric-card" key={metric.label}>
+            <span>{metric.label}</span>
+            <strong>{metric.value}</strong>
           </article>
         ))}
       </div>
 
-      <div className="workbench-metrics">
-        {output.metrics.map((metric) => (
-          <div className="metric-row" key={metric.label}>
-            <span>{metric.label}</span>
-            <strong>{metric.value}</strong>
+      <div className="playground-workbench-footer">
+        <div>
+          <p className="tag">Signals To Watch</p>
+          <div className="workbench-signal-list">
+            {experiment.signals.map((signal) => (
+              <article className="workbench-signal-card" key={signal}>
+                <p>{signal}</p>
+              </article>
+            ))}
           </div>
-        ))}
+        </div>
+        <p className="muted">Tools: {experiment.tools.join(", ")}</p>
       </div>
-
-      <p className="sim-reco">{output.recommendation}</p>
-      <p className="muted">Tools: {experiment.tools.join(", ")}</p>
     </article>
   );
 }

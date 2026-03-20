@@ -6,15 +6,21 @@ import { ExperimentFilterBar } from "../components/playground/ExperimentFilterBa
 import { ExperimentCard } from "../components/playground/ExperimentCard";
 import { ExperimentWorkbench } from "../components/playground/ExperimentWorkbench";
 import { usePageMeta } from "../lib/seo";
+import { playgroundStatusLabels } from "../lib/playground";
 
 const typedExperiments = experiments as Experiment[];
 const categoryOrder: Experiment["category"][] = ["ai-flow", "ui", "motion", "3d"];
+const labRules = [
+  "Pick one annoying product problem, not a buzzword.",
+  "Push the controls until the read changes, then pull it back to something you would trust.",
+  "If the lesson is not useful in production, the experiment failed."
+];
 
 export function PlaygroundPage() {
   usePageMeta({
     title: "Playground | Catalin Siegling",
     description:
-      "Smaller experiments used to test interaction feel, operational tradeoffs, and interface direction.",
+      "Small interactive labs used to test one real product problem at a time, including what shipped and what got cut.",
     path: "/playground"
   });
 
@@ -46,22 +52,21 @@ export function PlaygroundPage() {
     });
   }, [activeCategory]);
 
-  const overview = useMemo(() => {
-    const shipped = typedExperiments.filter((item) => item.status === "shipped").length;
-    const exploratory = typedExperiments.filter((item) => item.status === "exploratory").length;
-    const featured = typedExperiments.filter((item) => item.featured).length;
-
-    return [
-      { label: "experiments", value: `${typedExperiments.length}`, detail: "small sandboxes on this page" },
-      { label: "shipped", value: `${shipped}`, detail: "ideas that graduated into production" },
-      { label: "featured", value: `${featured}`, detail: "the ones worth opening first" },
-      { label: "visible now", value: `${activeCategory === "all" ? typedExperiments.length : filtered.length}`, detail: activeCategory === "all" ? "full shelf loaded" : `${activeCategory} filter active` },
-      { label: "exploratory", value: `${exploratory}`, detail: "worth learning from even if they stayed out" }
-    ];
-  }, [activeCategory, filtered.length]);
-
-  const graduatedExperiments = useMemo(() => {
+  const shippedExperiments = useMemo(() => {
     return typedExperiments.filter((item) => item.status === "shipped").slice(0, 4);
+  }, []);
+  const exploratoryExperiments = useMemo(() => {
+    return typedExperiments.filter((item) => item.status === "exploratory");
+  }, []);
+  const activeExperiments = useMemo(() => {
+    return typedExperiments.filter((item) => item.status === "active");
+  }, []);
+  const statusCounts = useMemo(() => {
+    return {
+      shipped: typedExperiments.filter((item) => item.status === "shipped").length,
+      active: typedExperiments.filter((item) => item.status === "active").length,
+      exploratory: typedExperiments.filter((item) => item.status === "exploratory").length
+    };
   }, []);
 
   const activeExperiment = useMemo(() => {
@@ -87,49 +92,72 @@ export function PlaygroundPage() {
 
   return (
     <div className="stack">
-      <section className="surface page-intro">
-        <p className="eyebrow">Playground</p>
-        <h1>Smaller tests behind the bigger system.</h1>
-        <p>
-          This is where I isolate one variable at a time before it shows up in the main product.
-        </p>
-        <ExperimentFilterBar active={activeCategory} categories={availableCategories} onSelect={setActiveCategory} />
-      </section>
-      <section className="surface playground-overview-shell">
-        <div className="playground-overview-grid">
-          {overview.map((item) => (
-            <article className="card playground-overview-card" key={item.label}>
-              <p className="tag">{item.label}</p>
-              <h2>{item.value}</h2>
-              <p className="muted">{item.detail}</p>
-            </article>
-          ))}
+      <section className="surface page-intro playground-hero">
+        <div className="playground-hero-layout">
+          <div className="playground-hero-copy">
+            <p className="eyebrow">Playground</p>
+            <h1>This page has to earn your time.</h1>
+            <p>
+              These are small labs for real product questions. If an experiment only looks clever, it does not belong
+              here.
+            </p>
+            <p className="muted">
+              Pick a problem, break it on purpose, then pull it back to something you would actually trust.
+            </p>
+            <ExperimentFilterBar active={activeCategory} categories={availableCategories} onSelect={setActiveCategory} />
+            <div className="playground-proof-row" aria-label="Playground status">
+              <span className="playground-proof-pill">{`${statusCounts.shipped} shipped`}</span>
+              <span className="playground-proof-pill">{`${statusCounts.active} still tuning`}</span>
+              <span className="playground-proof-pill">{`${statusCounts.exploratory} honest miss`}</span>
+            </div>
+          </div>
+
+          <aside className="card playground-rules-card">
+            <p className="tag">Ground Rules</p>
+            <h2>Make the lesson obvious fast.</h2>
+            <div className="playground-rule-list">
+              {labRules.map((rule, index) => (
+                <article className="playground-rule-item" key={rule}>
+                  <span>{`0${index + 1}`}</span>
+                  <p>{rule}</p>
+                </article>
+              ))}
+            </div>
+          </aside>
         </div>
       </section>
       <section className="surface playground-shell">
         <div className="split-header">
           <div>
-            <p className="eyebrow">Experiment Shelf</p>
-            <h2>Single-variable tests, kept in the same visual language as the shipped work.</h2>
+            <p className="eyebrow">Pick A Problem</p>
+            <h2>Each card is a tiny pressure test with a reason to exist.</h2>
+            <p className="chapter-copy">
+              The goal is not to admire widgets. The goal is to make one decision clearer.
+            </p>
           </div>
           {activeExperiment ? (
             <span className={`playground-status-pill playground-status-pill-${activeExperiment.status}`}>
-              {activeExperiment.status}
+              {playgroundStatusLabels[activeExperiment.status]}
             </span>
           ) : null}
         </div>
         {activeExperiment ? (
-          <div className="playground-focus-grid">
-            <article className="card playground-focus-card">
-              <p className="tag">Current Question</p>
+          <div className="playground-brief-grid">
+            <article className="card playground-brief-card">
+              <p className="tag">Current Lab</p>
               <h3>{activeExperiment.title}</h3>
               <p>{activeExperiment.question}</p>
               <p className="muted">Applied to {activeExperiment.appliedTo}</p>
             </article>
-            <article className="card playground-focus-card">
-              <p className="tag">What I watched</p>
+            <article className="card playground-brief-card">
+              <p className="tag">Why It Mattered</p>
+              <p>{activeExperiment.result}</p>
+              <p className="muted">{activeExperiment.summary}</p>
+            </article>
+            <article className="card playground-brief-card">
+              <p className="tag">What Showed Up First</p>
               <ul className="notes-list playground-signal-list">
-                {activeExperiment.signals.map((signal) => (
+                {activeExperiment.signals.slice(0, 2).map((signal) => (
                   <li key={signal}>{signal}</li>
                 ))}
               </ul>
@@ -153,20 +181,46 @@ export function PlaygroundPage() {
       <section className="surface playground-carryover-shell">
         <div className="split-header">
           <div>
-            <p className="eyebrow">Graduated Work</p>
-            <h2>Ideas that earned their way into the real system.</h2>
+            <p className="eyebrow">What Survived</p>
+            <h2>The useful bits shipped. The rest stayed in the lab.</h2>
+            <p className="chapter-copy">
+              That is the point of the playground: find the part worth stealing, then throw the rest away.
+            </p>
           </div>
         </div>
-        <div className="card-grid playground-carryover-grid">
-          {graduatedExperiments.map((item) => (
-            <article className="card playground-carryover-card" key={item.id}>
-              <p className="tag">{item.category}</p>
-              <h3>{item.title}</h3>
-              <p>{item.result}</p>
-              <p className="muted">Applied to {item.appliedTo}</p>
+        <div className="playground-carryover-layout">
+          <div className="card-grid playground-carryover-grid">
+            {shippedExperiments.map((item) => (
+              <article className="card playground-carryover-card" key={item.id}>
+                <p className="tag">{playgroundStatusLabels[item.status]}</p>
+                <h3>{item.title}</h3>
+                <p>{item.result}</p>
+                <p className="muted">Applied to {item.appliedTo}</p>
+              </article>
+            ))}
+          </div>
+
+          {exploratoryExperiments[0] ? (
+            <article className="card playground-cut-card">
+              <p className="tag">The Honest Miss</p>
+              <h3>{exploratoryExperiments[0].title}</h3>
+              <p>{exploratoryExperiments[0].summary}</p>
+              <p className="muted">{exploratoryExperiments[0].result}</p>
             </article>
-          ))}
+          ) : null}
         </div>
+
+        {activeExperiments.length ? (
+          <div className="playground-active-strip">
+            {activeExperiments.map((item) => (
+              <article className="card playground-active-card" key={item.id}>
+                <p className="tag">Still Tuning</p>
+                <h3>{item.title}</h3>
+                <p>{item.summary}</p>
+              </article>
+            ))}
+          </div>
+        ) : null}
       </section>
     </div>
   );
