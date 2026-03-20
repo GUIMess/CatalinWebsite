@@ -18,7 +18,13 @@ export function ExperimentCard({ experiment, active, onSelect }: ExperimentCardP
       <p className="muted experiment-card-question">{experiment.question}</p>
       <p className="muted experiment-card-meta">Applied to {experiment.appliedTo}</p>
       <p className="muted experiment-card-tools">{experiment.tools.join(" / ")}</p>
-      <button className="inline-link button-link" type="button" onClick={() => onSelect(experiment)}>
+      <button
+        className="inline-link button-link"
+        type="button"
+        onClick={() => onSelect(experiment)}
+        aria-pressed={active}
+        aria-label={active ? `${experiment.title} is loaded` : `Load ${experiment.title}`}
+      >
         {active ? "loaded" : "load experiment"}
       </button>
     </article>

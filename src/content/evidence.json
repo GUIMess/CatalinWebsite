@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-03-10T00:22:57.916Z",
+  "generatedAt": "2026-03-20T04:20:48.427Z",
   "source": {
     "repo": "sanitized sibling bot repository",
     "pathHint": "external-bot-repo"
   },
   "counts": {
-    "commandModules": 40,
-    "serviceModules": 36,
-    "schedulerLoops": 15,
-    "testFiles": 76,
+    "commandModules": 42,
+    "serviceModules": 38,
+    "schedulerLoops": 16,
+    "testFiles": 134,
     "dashboardTsxFiles": 95,
     "runtimeTarget": "Node 22"
   },
@@ -74,7 +74,7 @@
       "interval": "3m"
     },
     {
-      "name": "live-score-canvas-poster",
+      "name": "live-score-grid-poster",
       "intervalMs": 300000,
       "interval": "5m"
     },
@@ -87,6 +87,11 @@
       "name": "daily-schedule-poster",
       "intervalMs": null,
       "interval": "event-driven"
+    },
+    {
+      "name": "presence-manager",
+      "intervalMs": 60000,
+      "interval": "1m"
     }
   ],
   "endpoints": [
@@ -123,18 +128,7 @@
           "ping"
         ],
         "scrub": "Guild, user, and channel totals exist in the live payload but stay redacted here. nodeVersion and platform are also permission-gated.",
-        "receipts": [
-          {
-            "label": "Status payload fields",
-            "file": "routes/dashboard.js",
-            "line": 84
-          },
-          {
-            "label": "Admin-only field strip",
-            "file": "routes/dashboard.js",
-            "line": 73
-          }
-        ]
+        "receipts": []
       },
       {
         "title": "Public health check",
@@ -149,18 +143,7 @@
           "memory"
         ],
         "scrub": "The shape is real. Live timestamps, host platform details, and current heap values are intentionally omitted from the portfolio.",
-        "receipts": [
-          {
-            "label": "Healthy response",
-            "file": "core/bot-server.js",
-            "line": 524
-          },
-          {
-            "label": "Unhealthy fallback",
-            "file": "core/bot-server.js",
-            "line": 532
-          }
-        ]
+        "receipts": []
       },
       {
         "title": "Live update handshake",
@@ -179,7 +162,7 @@
           {
             "label": "WebSocket status payload",
             "file": "core/bot-server.js",
-            "line": 553
+            "line": 623
           }
         ]
       },
@@ -263,8 +246,8 @@
       },
       {
         "label": "Fast loops",
-        "value": "4",
-        "detail": "4 scheduler loops run at 1m-5m cadence and carry the highest heartbeat pressure."
+        "value": "5",
+        "detail": "5 scheduler loops run at 1m-5m cadence and carry the highest heartbeat pressure."
       },
       {
         "label": "Event-driven jobs",
@@ -279,12 +262,12 @@
       {
         "label": "Critical trip",
         "value": "3 errs",
-        "detail": "11 scheduler paths explicitly wire errors into shared health state."
+        "detail": "13 scheduler paths explicitly wire errors into shared health state."
       },
       {
         "label": "Cache namespaces",
-        "value": "15",
-        "detail": "15 explicit memory/Redis namespaces keep cache boundaries visible instead of ad hoc."
+        "value": "0",
+        "detail": "0 explicit memory/Redis namespaces keep cache boundaries visible instead of ad hoc."
       }
     ],
     "operatorSurfaces": [
@@ -296,7 +279,7 @@
     "notes": [
       "Runtime target: Node 22",
       "4 public operator surfaces expose health/runtime status",
-      "7 recovery rails were detected across cache, analytics, scheduler health, and shutdown paths"
+      "5 recovery rails were detected across cache, analytics, scheduler health, and shutdown paths"
     ],
     "recoveryRails": [
       {
@@ -315,31 +298,19 @@
         "label": "Memory-only cache mode",
         "detail": "If Redis is unavailable, the runtime stays up on memory cache instead of hard failing.",
         "file": "utils/unifiedCache.js",
-        "line": 166
+        "line": 165
       },
       {
         "label": "Emergency cache cleanup",
         "detail": "Heap pressure triggers cache flush and optional forced GC before the process spirals.",
         "file": "utils/unifiedCache.js",
-        "line": 184
-      },
-      {
-        "label": "Stale dashboard cache fallback",
-        "detail": "If fresh analytics fail, the dashboard can serve stale cached output instead of a blank panel.",
-        "file": "routes/dashboard.js",
-        "line": 950
-      },
-      {
-        "label": "Legacy analytics fallback",
-        "detail": "Hourly graphs fall back to older metrics sources when the preferred path returns unusable data.",
-        "file": "routes/dashboard.js",
-        "line": 1703
+        "line": 192
       },
       {
         "label": "Graceful shutdown path",
         "detail": "Signals trigger structured cleanup instead of dropping the process cold.",
         "file": "bot.js",
-        "line": 330
+        "line": 326
       }
     ]
   },
@@ -354,26 +325,21 @@
       "logReceipt": "[DASHBOARD] Falling back to legacy hourly metrics: {mongoError.message}",
       "commits": [
         {
-          "hash": "5ef78cac",
+          "hash": "bed8fba7",
           "date": "2026-03-08",
           "summary": "Fix analytics hourly activity buffer recovery"
         },
         {
-          "hash": "250b68d4",
+          "hash": "377992bb",
           "date": "2026-03-07",
           "summary": "Fix dashboard analytics graph series normalization"
         }
       ],
       "sourceReceipts": [
         {
-          "label": "Dashboard fallback path",
-          "file": "routes/dashboard.js",
-          "line": 1703
-        },
-        {
           "label": "Collector buffer rebuild",
           "file": "utils/analyticsCollector.js",
-          "line": 270
+          "line": 274
         }
       ]
     },
@@ -387,7 +353,7 @@
       "logReceipt": null,
       "commits": [
         {
-          "hash": "8ea457d4",
+          "hash": "010ba67b",
           "date": "2026-03-08",
           "summary": "Fix CBB pickem dead-button lock consistency and interaction lookup"
         }
@@ -396,12 +362,12 @@
         {
           "label": "Persisted lock boundary",
           "file": "utils/buttonPickemSystem.js",
-          "line": 419
+          "line": 472
         },
         {
           "label": "Started-game lookup override",
           "file": "core/bot-events.js",
-          "line": 420
+          "line": 436
         }
       ]
     },
@@ -415,12 +381,12 @@
       "logReceipt": null,
       "commits": [
         {
-          "hash": "ea430e9c",
+          "hash": "56c262d5",
           "date": "2026-03-06",
           "summary": "Implement full auth, config, health, and CI hardening pass"
         },
         {
-          "hash": "ccf27485",
+          "hash": "30499446",
           "date": "2026-03-06",
           "summary": "Harden auth and admin APIs; improve rate limiting and health checks"
         }
@@ -429,12 +395,12 @@
         {
           "label": "Health route",
           "file": "core/bot-server.js",
-          "line": 521
+          "line": 591
         },
         {
           "label": "Auth rate limiter",
           "file": "core/bot-server.js",
-          "line": 581
+          "line": 649
         }
       ]
     },
@@ -448,7 +414,7 @@
       "logReceipt": "[UnifiedCache] Emergency cleanup triggered: {heapUsedMB}MB > {threshold}MB",
       "commits": [
         {
-          "hash": "f3d7e910",
+          "hash": "ea035f06",
           "date": "2026-03-05",
           "summary": "fix(deploy): remove jemalloc — resvg subprocess model eliminates native memory fragmentation"
         }
@@ -457,52 +423,52 @@
         {
           "label": "Cache emergency cleanup",
           "file": "utils/unifiedCache.js",
-          "line": 184
+          "line": 192
         },
         {
           "label": "Graceful shutdown signal",
           "file": "bot.js",
-          "line": 330
+          "line": 326
         }
       ]
     }
   ],
   "recentOpsMoves": [
     {
-      "hash": "5ef78cac",
-      "date": "2026-03-08",
-      "summary": "Fix analytics hourly activity buffer recovery",
+      "hash": "50b81769",
+      "date": "2026-03-19",
+      "summary": "Fix basketball score fallback and late tenths clock",
+      "category": "reliability"
+    },
+    {
+      "hash": "1ba73720",
+      "date": "2026-03-19",
+      "summary": "Tighten image typography and grid theming",
       "category": "analytics"
     },
     {
-      "hash": "8ea457d4",
-      "date": "2026-03-08",
-      "summary": "Fix CBB pickem dead-button lock consistency and interaction lookup",
+      "hash": "6b4d2809",
+      "date": "2026-03-18",
+      "summary": "feat: update pickem and autoposter workflow",
       "category": "runtime"
     },
     {
-      "hash": "fd21914b",
-      "date": "2026-03-07",
-      "summary": "Improve coach fallback disambiguation, role journey badges, and headshot priority",
-      "category": "reliability"
-    },
-    {
-      "hash": "2942005d",
-      "date": "2026-03-07",
-      "summary": "Improve daily schedule typography and enlarge TV logos",
+      "hash": "6e2d3db8",
+      "date": "2026-03-18",
+      "summary": "fix: clear AdvancedAnalytics singleton interval to prevent Jest hang",
       "category": "analytics"
     },
     {
-      "hash": "250b68d4",
-      "date": "2026-03-07",
-      "summary": "Fix dashboard analytics graph series normalization",
+      "hash": "de66ba24",
+      "date": "2026-03-18",
+      "summary": "fix: set ENABLE_ANALYTICS=true in test env before module load",
       "category": "analytics"
     },
     {
-      "hash": "7d41df03",
-      "date": "2026-03-06",
-      "summary": "Improve CBB matchup ESPN context and leader fallbacks",
-      "category": "reliability"
+      "hash": "e4fd1411",
+      "date": "2026-03-18",
+      "summary": "test: comprehensive dashboard analytics test coverage (101 tests)",
+      "category": "analytics"
     }
   ],
   "receipts": [
@@ -515,7 +481,7 @@
     {
       "label": "Health endpoint",
       "file": "core/bot-server.js",
-      "line": 521,
+      "line": 591,
       "signal": "Operational runtime health surface for deploy/platform checks."
     },
     {
@@ -527,7 +493,7 @@
     {
       "label": "WebSocket runtime updates",
       "file": "core/bot-server.js",
-      "line": 1060,
+      "line": 1110,
       "signal": "Dashboard update channel for live operator visibility."
     }
   ]

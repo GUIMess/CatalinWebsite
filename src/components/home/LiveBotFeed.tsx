@@ -6,6 +6,8 @@ const BOT_URL =
   "https://web-production-a6a95.up.railway.app";
 
 const BOT_TELEMETRY_URL = `${BOT_URL.replace(/\/$/, "")}/api/public/portfolio-telemetry`;
+const FALLBACK_TELEMETRY_URL = "/portfolio-telemetry-fallback.json";
+const TELEMETRY_CACHE_KEY = "portfolio-telemetry-snapshot-v1";
 const pollIntervalMs = 30000;
 
 const integerFormatter = new Intl.NumberFormat("en-US");
@@ -47,6 +49,11 @@ type TelemetrySnapshot = {
   featureMix30d: FeatureMixItem[];
 };
 
+type TelemetryEnvelope = {
+  success?: boolean;
+  data?: unknown;
+};
+
 function toNumber(value: unknown): number | null {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -82,12 +89,22 @@ function normalizeSeries(values: unknown, length: number): number[] {
   return next;
 }
 
-function parseTelemetry(payload: unknown): TelemetrySnapshot | null {
+function readTelemetryData(payload: unknown): unknown {
   if (!payload || typeof payload !== "object") {
-    return null;
+    return payload;
   }
 
   const data = payload as Record<string, unknown>;
+  return "data" in data ? data.data : payload;
+}
+
+function parseTelemetry(payload: unknown): TelemetrySnapshot | null {
+  const payloadData = readTelemetryData(payload);
+  if (!payloadData || typeof payloadData !== "object") {
+    return null;
+  }
+
+  const data = payloadData as Record<string, unknown>;
   const generatedAt = Date.parse(String(data.generatedAt ?? ""));
   const featureMixRaw = Array.isArray(data.featureMix24h) ? data.featureMix24h : [];
 
@@ -217,7 +234,58 @@ function activitySummary(
   return `${formatInteger(peak)} ${nounLabel} at the busiest ${label} across ${activeHours} active ${labelPlural}.`;
 }
 
-function ActivityBands({ data }: Readonly<{ data: number[] }>) {
+function readCachedSnapshot(): TelemetrySnapshot | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(TELEMETRY_CACHE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    return parseTelemetry(JSON.parse(raw));
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedSnapshot(payload: unknown) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(TELEMETRY_CACHE_KEY, JSON.stringify(payload));
+  } catch {
+    // Ignore storage failures; telemetry should still render live.
+  }
+}
+
+async function loadBundledFallbackSnapshot(): Promise<TelemetrySnapshot | null> {
+  try {
+    const response = await fetch(FALLBACK_TELEMETRY_URL, { cache: "no-store" });
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = (await response.json()) as TelemetryEnvelope;
+    return parseTelemetry(payload);
+  } catch {
+    return null;
+  }
+}
+
+async function resolveFallbackSnapshot(currentSnapshot: TelemetrySnapshot | null): Promise<TelemetrySnapshot | null> {
+  if (currentSnapshot) {
+    return currentSnapshot;
+  }
+
+  return readCachedSnapshot() ?? loadBundledFallbackSnapshot();
+}
+
+function ActivityBands({ data, label }: Readonly<{ data: number[]; label: string }>) {
   if (!data.length || !hasSignal(data)) {
     return null;
   }
@@ -232,7 +300,8 @@ function ActivityBands({ data }: Readonly<{ data: number[] }>) {
     <svg
       viewBox={`0 0 ${width} ${height}`}
       className="telemetry-activity-chart"
-      aria-label="Command activity over the last 24 hours"
+      role="img"
+      aria-label={label}
       preserveAspectRatio="none"
     >
       <defs>
@@ -295,11 +364,8 @@ export function LiveBotFeed() {
           throw new Error(`Telemetry request failed with ${response.status}`);
         }
 
-        const payload = (await response.json()) as {
-          success?: boolean;
-          data?: unknown;
-        };
-        const nextSnapshot = parseTelemetry(payload.data);
+        const payload = (await response.json()) as TelemetryEnvelope;
+        const nextSnapshot = parseTelemetry(payload);
 
         if (!nextSnapshot) {
           throw new Error("Telemetry payload was missing data");
@@ -313,12 +379,26 @@ export function LiveBotFeed() {
         setSnapshot(nextSnapshot);
         setFeedStatus(nextSnapshot.status === "degraded" ? "degraded" : "live");
         setSecondsAgo(Math.floor((Date.now() - nextSnapshot.generatedAt) / 1000));
+        writeCachedSnapshot(readTelemetryData(payload));
       } catch {
         if (cancelled) {
           return;
         }
 
-        setFeedStatus(snapshotRef.current ? "stale" : "offline");
+        const fallbackSnapshot = await resolveFallbackSnapshot(snapshotRef.current);
+        if (cancelled) {
+          return;
+        }
+
+        if (fallbackSnapshot) {
+          snapshotRef.current = fallbackSnapshot;
+          setSnapshot(fallbackSnapshot);
+          setFeedStatus("stale");
+          setSecondsAgo(Math.floor((Date.now() - fallbackSnapshot.generatedAt) / 1000));
+          return;
+        }
+
+        setFeedStatus("offline");
       }
     };
 
@@ -390,6 +470,7 @@ export function LiveBotFeed() {
     activityUses24h ? "hour" : "day",
     activityNoun,
   );
+  const activityChartLabel = `${activityHeading} for the last ${activityUses24h ? "24 hours" : "30 days"}. ${peakSummary}`;
   const responseWindowLabel = has24hResponse
     ? "24h"
     : hasRollingResponse
@@ -417,6 +498,14 @@ export function LiveBotFeed() {
       : responseWindowLabel === "30d"
         ? "Rolling 30-day response context"
         : "Live surface checks";
+  const telemetryWindowLabel =
+    feedStatus === "stale"
+      ? "Cached telemetry fallback"
+      : snapshot?.dataMode === "limited"
+        ? "Runtime signal only"
+        : activityUses24h
+          ? "24-hour production window"
+          : "30-day rolling command window";
 
   return (
     <section className="surface portfolio-telemetry" id="live-proof">
@@ -444,13 +533,7 @@ export function LiveBotFeed() {
         <div className="telemetry-shell">
           <div className="telemetry-stage">
             <div className="telemetry-stage-topline">
-              <span>
-                {snapshot.dataMode === "limited"
-                  ? "Runtime signal only"
-                  : activityUses24h
-                    ? "24-hour production window"
-                    : "30-day rolling command window"}
-              </span>
+              <span>{telemetryWindowLabel}</span>
               <span>{activity.length ? peakSummary : lastActiveLabel ? `Last tracked ${lastActiveLabel}` : "Quiet window"}</span>
             </div>
 
@@ -476,7 +559,7 @@ export function LiveBotFeed() {
               </div>
               {activity.length ? (
                 <>
-                  <ActivityBands data={activity} />
+                  <ActivityBands data={activity} label={activityChartLabel} />
                   <div className="telemetry-chart-scale" aria-hidden="true">
                     <span>{activityStartLabel}</span>
                     <span>{activityEndLabel}</span>
@@ -549,7 +632,7 @@ export function LiveBotFeed() {
         <div className="telemetry-empty">
           <p className="muted">
             {feedStatus === "offline"
-              ? "The bot is unreachable right now."
+              ? "Live telemetry is unavailable right now."
               : "Syncing live telemetry from the bot."}
           </p>
         </div>

@@ -7,7 +7,9 @@
     "dev": "vite",
     "evidence:refresh": "node scripts/generate-evidence-snapshot.mjs",
     "sitemap:generate": "node scripts/generate-sitemap.mjs",
-    "build": "npm run evidence:refresh && npm run sitemap:generate && tsc --noEmit && vite build",
+    "routes:generate": "node scripts/generate-route-html.mjs",
+    "telemetry:fallback:refresh": "node scripts/refresh-portfolio-telemetry-fallback.mjs",
+    "build": "npm run evidence:refresh && npm run sitemap:generate && tsc --noEmit && vite build && npm run routes:generate",
     "preview": "vite preview",
     "test": "vitest run"
   },

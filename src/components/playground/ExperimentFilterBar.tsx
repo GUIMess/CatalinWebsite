@@ -15,11 +15,12 @@ type ExperimentFilterBarProps = {
 
 export function ExperimentFilterBar({ active, categories, onSelect }: ExperimentFilterBarProps) {
   return (
-    <div className="button-row">
+    <div className="button-row" role="group" aria-label="Filter experiments by category">
       <button
         className={active === "all" ? "chip active" : "chip"}
         type="button"
         onClick={() => onSelect("all")}
+        aria-pressed={active === "all"}
       >
         all
       </button>
@@ -29,6 +30,7 @@ export function ExperimentFilterBar({ active, categories, onSelect }: Experiment
           className={active === category ? "chip active" : "chip"}
           type="button"
           onClick={() => onSelect(category)}
+          aria-pressed={active === category}
         >
           {categoryLabels[category]}
         </button>

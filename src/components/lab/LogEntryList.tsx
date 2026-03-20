@@ -65,34 +65,56 @@ export function LogEntryList({ entries }: LogEntryListProps) {
       </div>
 
       <div className="log-controls">
-        <div className="button-row">
-          <button className={activeTheme === "all" ? "chip active" : "chip"} onClick={() => setActiveTheme("all")} type="button">
+        <div className="button-row" role="group" aria-label="Filter log entries by theme">
+          <button
+            className={activeTheme === "all" ? "chip active" : "chip"}
+            onClick={() => setActiveTheme("all")}
+            type="button"
+            aria-pressed={activeTheme === "all"}
+          >
             all themes
           </button>
           <button
             className={activeTheme === "product" ? "chip active" : "chip"}
             onClick={() => setActiveTheme("product")}
             type="button"
+            aria-pressed={activeTheme === "product"}
           >
             product
           </button>
-          <button className={activeTheme === "ux" ? "chip active" : "chip"} onClick={() => setActiveTheme("ux")} type="button">
+          <button
+            className={activeTheme === "ux" ? "chip active" : "chip"}
+            onClick={() => setActiveTheme("ux")}
+            type="button"
+            aria-pressed={activeTheme === "ux"}
+          >
             ux
           </button>
-          <button className={activeTheme === "ops" ? "chip active" : "chip"} onClick={() => setActiveTheme("ops")} type="button">
+          <button
+            className={activeTheme === "ops" ? "chip active" : "chip"}
+            onClick={() => setActiveTheme("ops")}
+            type="button"
+            aria-pressed={activeTheme === "ops"}
+          >
             ops
           </button>
           <button
             className={activeTheme === "growth" ? "chip active" : "chip"}
             onClick={() => setActiveTheme("growth")}
             type="button"
+            aria-pressed={activeTheme === "growth"}
           >
             growth
           </button>
         </div>
 
-        <div className="button-row">
-          <button className={activeStage === "all" ? "chip active" : "chip"} onClick={() => setActiveStage("all")} type="button">
+        <div className="button-row" role="group" aria-label="Filter log entries by stage">
+          <button
+            className={activeStage === "all" ? "chip active" : "chip"}
+            onClick={() => setActiveStage("all")}
+            type="button"
+            aria-pressed={activeStage === "all"}
+          >
             all stages
           </button>
           {stageOrder.map((stage) => (
@@ -101,6 +123,7 @@ export function LogEntryList({ entries }: LogEntryListProps) {
               className={activeStage === stage ? "chip active" : "chip"}
               onClick={() => setActiveStage(stage)}
               type="button"
+              aria-pressed={activeStage === stage}
             >
               {stage}
             </button>
@@ -109,9 +132,11 @@ export function LogEntryList({ entries }: LogEntryListProps) {
 
         <div className="button-row">
           <select
+            id="log-tool-filter"
             className="chip-select"
             value={activeTool}
             onChange={(e) => setActiveTool(e.target.value)}
+            aria-label="Filter log entries by tool"
           >
             <option value="all">All tools</option>
             {availableTools.map((tool) => (

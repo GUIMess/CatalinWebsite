@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "data": {
+    "status": "live",
+    "dataMode": "full",
+    "generatedAt": "2026-03-20T04:15:26.049Z",
+    "windowHours": 24,
+    "commands24h": 0,
+    "commands30d": 0,
+    "commandsAllTime": 2484,
+    "newsPosts24h": 307,
+    "newsPosts30d": 3088,
+    "activity24h": [3, 2, 1, 4, 6, 9, 10, 17, 20, 26, 24, 22, 24, 22, 32, 25, 18, 13, 9, 5, 12, 10, 22, 2],
+    "activity30d": [0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 394, 340, 425, 319, 180, 246, 312, 472, 383, 325, 51],
+    "avgResponseMs24h": null,
+    "avgResponseMs30d": null,
+    "avgResponseMsSinceRestart": 3259,
+    "errorRate24h": null,
+    "errorRate30d": null,
+    "errorRateSinceRestart": 0,
+    "cacheHitRate": 96.1,
+    "discordPingMs": 35,
+    "lastActiveAt": "2026-03-20T04:11:10.034Z",
+    "featureMix24h": [
+      { "key": "scores", "label": "Scores", "count": 21, "share": 60 },
+      { "key": "matchups", "label": "Matchups", "count": 11, "share": 31.4 },
+      { "key": "team_lookup", "label": "Team lookup", "count": 2, "share": 5.7 },
+      { "key": "player_stats", "label": "Player stats", "count": 1, "share": 2.9 }
+    ],
+    "featureMix30d": [
+      { "key": "matchups", "label": "Matchups", "count": 167, "share": 44.7 },
+      { "key": "team_lookup", "label": "Team lookup", "count": 107, "share": 28.6 },
+      { "key": "scores", "label": "Scores", "count": 58, "share": 15.5 },
+      { "key": "player_stats", "label": "Player stats", "count": 21, "share": 5.6 },
+      { "key": "transfer", "label": "Transfer portal", "count": 12, "share": 3.2 }
+    ]
+  }
+}

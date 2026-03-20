@@ -32,4 +32,4 @@ COPY --from=build /app/dist ./dist
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node -e \"const fs=require('fs');const cfg={VITE_SITE_URL:process.env.VITE_SITE_URL||'',VITE_PLAUSIBLE_DOMAIN:process.env.VITE_PLAUSIBLE_DOMAIN||'',VITE_PLAUSIBLE_SRC:process.env.VITE_PLAUSIBLE_SRC||'',VITE_FORMSPREE_ENDPOINT:process.env.VITE_FORMSPREE_ENDPOINT||'',VITE_BOT_URL:process.env.VITE_BOT_URL||'',VITE_BOT_WS_URL:process.env.VITE_BOT_WS_URL||''};fs.writeFileSync('./dist/runtime-config.js','window.__APP_CONFIG__='+JSON.stringify(cfg)+';');\" && serve -s dist -l ${PORT:-3000}"]
+CMD ["sh", "-c", "node -e \"const fs=require('fs');const cfg={VITE_SITE_URL:process.env.VITE_SITE_URL||'',VITE_PLAUSIBLE_DOMAIN:process.env.VITE_PLAUSIBLE_DOMAIN||'',VITE_PLAUSIBLE_SRC:process.env.VITE_PLAUSIBLE_SRC||'',VITE_FORMSPREE_ENDPOINT:process.env.VITE_FORMSPREE_ENDPOINT||'',VITE_BOT_URL:process.env.VITE_BOT_URL||'',VITE_BOT_WS_URL:process.env.VITE_BOT_WS_URL||''};fs.writeFileSync('./dist/runtime-config.js','window.__APP_CONFIG__='+JSON.stringify(cfg)+';');\" && serve dist -l ${PORT:-3000}"]
