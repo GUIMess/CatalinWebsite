@@ -17,11 +17,7 @@ export function WorkIndexPage() {
     <div className="stack">
       <section className="surface page-intro work-index-hero">
         <p className="eyebrow">Selected Work</p>
-        <h1>Two projects matter here.</h1>
-        <p>
-          The first is the live system that absorbed most of my time and taught me most of my lessons. The
-          second is a cleaner visual build that shows how I handle interface craft.
-        </p>
+        <h1>The flagship system.</h1>
       </section>
 
       <section className="surface work-index-shell">
@@ -31,7 +27,7 @@ export function WorkIndexPage() {
               className={item.slug === "live-alert-bot-core" ? "card work-index-card work-index-card-flagship" : "card work-index-card"}
               key={item.slug}
             >
-              <p className="tag">{item.slug === "live-alert-bot-core" ? "Flagship system" : "Companion project"}</p>
+              <p className="tag">Flagship system</p>
               <h2>{item.title}</h2>
               <p>{item.summary ?? item.context}</p>
               <p className="muted">

@@ -33,7 +33,6 @@ const featuredWork = typedWorkItems.filter((item) => item.featured).slice(0, 2);
 const snapshot = evidence as EvidenceSnapshot;
 const incidentHighlights = snapshot.incidentTimeline.slice(0, 3);
 const flagshipWork = featuredWork[0];
-const companionWork = featuredWork[1];
 const flagshipPanels = flagshipWork?.runtimePanels?.slice(0, 3) ?? [];
 const flagshipCheckpoints = flagshipWork?.checkpoints?.slice(0, 4) ?? [];
 
@@ -57,11 +56,7 @@ export function HomePage() {
           </div>
           <div>
             <p className="eyebrow">Main Builds</p>
-            <h2>The flagship runtime and the cleaner companion piece.</h2>
-            <p className="chapter-copy">
-              One project is the production machine. The other proves I can push a stronger visual system without losing
-              clarity.
-            </p>
+            <h2>The flagship system.</h2>
           </div>
           <Link className="inline-link" to="/playground">
             Open smaller experiments
@@ -94,25 +89,6 @@ export function HomePage() {
           ) : null}
 
           <div className="home-build-side">
-            {companionWork ? (
-              <article className="card selected-work-card">
-                <p className="tag">Companion build</p>
-                <h3>{companionWork.title}</h3>
-                <p>{companionWork.summary ?? companionWork.context}</p>
-                {companionWork.stack ? <p className="muted">Stack: {companionWork.stack.join(", ")}</p> : null}
-                <div className="build-card-links">
-                  <Link className="inline-link" to={`/work/${companionWork.slug}`}>
-                    Open system view
-                  </Link>
-                  {companionWork.liveUrl ? (
-                    <a className="inline-link" href={companionWork.liveUrl} target="_blank" rel="noreferrer">
-                      Visit live build
-                    </a>
-                  ) : null}
-                </div>
-              </article>
-            ) : null}
-
             {flagshipPanels.length ? (
               <article className="card build-panels-card">
                 <p className="tag">Pressure points</p>
@@ -138,11 +114,7 @@ export function HomePage() {
           </div>
           <div>
             <p className="eyebrow">Recent Fixes</p>
-            <h2>The latest break and repair work that actually changed the system.</h2>
-            <p className="chapter-copy">
-              The portfolio should feel alive because the maintenance work is alive. These are pulled from the current
-              evidence snapshot.
-            </p>
+            <h2>Break / fix, in order.</h2>
           </div>
           <Link className="inline-link" to="/lab-log">
             Open full build feed

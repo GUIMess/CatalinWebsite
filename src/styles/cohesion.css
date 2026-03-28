@@ -1,27 +1,24 @@
 body {
-  background:
-    radial-gradient(circle at 10% 0%, rgba(198, 221, 216, 0.5), transparent 30%),
-    radial-gradient(circle at 88% 14%, rgba(230, 212, 182, 0.5), transparent 28%),
-    linear-gradient(180deg, #fcfaf4 0%, #f5eee2 52%, #eee4d6 100%);
+  background: #0d1117;
 }
 
 .app-shell::before {
   background:
-    linear-gradient(90deg, transparent 0 11%, rgba(36, 46, 58, 0.04) 11.1% 11.2%, transparent 11.3%),
-    linear-gradient(180deg, transparent 0 18%, rgba(36, 46, 58, 0.03) 18.1% 18.2%, transparent 18.3%);
-  opacity: 0.5;
+    linear-gradient(90deg, transparent 0 11%, rgba(240, 246, 252, 0.02) 11.1% 11.2%, transparent 11.3%),
+    linear-gradient(180deg, transparent 0 18%, rgba(240, 246, 252, 0.015) 18.1% 18.2%, transparent 18.3%);
+  opacity: 0.6;
 }
 
 .app-shell::after {
   background:
-    radial-gradient(circle at 82% -8%, rgba(61, 116, 109, 0.16), transparent 36%),
-    radial-gradient(circle at 8% 104%, rgba(226, 211, 183, 0.24), transparent 30%);
+    radial-gradient(circle at 82% -8%, rgba(63, 185, 80, 0.06), transparent 36%),
+    radial-gradient(circle at 8% 104%, rgba(63, 185, 80, 0.03), transparent 30%);
 }
 
 .top-nav {
-  background: rgba(251, 248, 241, 0.84);
-  border-bottom-color: rgba(36, 46, 58, 0.08);
-  box-shadow: 0 12px 34px rgba(24, 32, 40, 0.05);
+  background: rgba(13, 17, 23, 0.88);
+  border-bottom-color: rgba(240, 246, 252, 0.07);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .brand {
@@ -29,7 +26,7 @@ body {
 }
 
 .nav-link {
-  color: rgba(75, 86, 97, 0.88);
+  color: var(--color-paper-muted);
 }
 
 .nav-link.active,
@@ -46,13 +43,11 @@ body {
 }
 
 .surface {
-  border-radius: 26px;
-  border-color: rgba(36, 46, 58, 0.1);
+  border-radius: 10px;
+  border-color: rgba(240, 246, 252, 0.07);
   padding: clamp(1.2rem, 2.5vw, 1.55rem);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(245, 239, 229, 0.98)),
-    var(--color-surface);
-  box-shadow: 0 24px 60px rgba(24, 32, 40, 0.06);
+  background: #161b22;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .surface::before {
@@ -61,7 +56,7 @@ body {
   right: 1.25rem;
   width: auto;
   height: 1px;
-  background: linear-gradient(90deg, rgba(61, 116, 109, 0.55), rgba(61, 116, 109, 0));
+  background: linear-gradient(90deg, rgba(63, 185, 80, 0.6), rgba(63, 185, 80, 0));
   opacity: 1;
 }
 
@@ -73,24 +68,21 @@ body {
 }
 
 .card {
-  border-radius: 20px;
-  border-color: rgba(36, 46, 58, 0.08);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(246, 241, 233, 0.92));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  border-radius: 6px;
+  border-color: rgba(240, 246, 252, 0.07);
+  background: #1c2128;
+  box-shadow: none;
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(61, 116, 109, 0.18);
-  box-shadow:
-    0 18px 34px rgba(24, 32, 40, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  transform: translateY(-2px);
+  border-color: rgba(63, 185, 80, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .eyebrow,
 .tag {
-  color: rgba(40, 79, 74, 0.82);
+  color: var(--color-accent);
 }
 
 .muted {
@@ -105,43 +97,43 @@ body {
   text-transform: none;
   letter-spacing: 0.04rem;
   font-size: 0.78rem;
-  color: var(--color-accent-strong);
-  border-bottom-color: rgba(40, 79, 74, 0.16);
+  color: var(--color-accent);
+  border-bottom-color: rgba(63, 185, 80, 0.2);
 }
 
 .inline-link:hover {
-  border-bottom-color: rgba(40, 79, 74, 0.5);
+  border-bottom-color: rgba(63, 185, 80, 0.6);
 }
 
 .chip {
-  border-color: rgba(36, 46, 58, 0.1);
-  background: rgba(255, 255, 255, 0.78);
-  color: rgba(75, 86, 97, 0.9);
+  border-color: rgba(240, 246, 252, 0.1);
+  background: rgba(28, 33, 40, 0.9);
+  color: var(--color-paper-muted);
 }
 
 .chip.active,
 .chip:hover {
-  border-color: rgba(61, 116, 109, 0.18);
-  background: rgba(233, 242, 239, 0.9);
+  border-color: rgba(63, 185, 80, 0.3);
+  background: rgba(63, 185, 80, 0.08);
   color: var(--color-accent-strong);
 }
 
 .chip.danger.active {
-  border-color: rgba(146, 92, 68, 0.2);
-  background: rgba(249, 238, 231, 0.92);
-  color: #925c44;
+  border-color: rgba(210, 153, 34, 0.3);
+  background: rgba(210, 153, 34, 0.1);
+  color: #d29922;
 }
 
 .chip-select {
-  border-color: rgba(36, 46, 58, 0.1);
-  background-color: rgba(255, 255, 255, 0.78);
-  color: rgba(75, 86, 97, 0.9);
+  border-color: rgba(240, 246, 252, 0.1);
+  background-color: rgba(28, 33, 40, 0.9);
+  color: var(--color-paper-muted);
 }
 
 .chip-select:hover,
 .chip-select:focus {
-  border-color: rgba(61, 116, 109, 0.18);
-  background-color: rgba(233, 242, 239, 0.9);
+  border-color: rgba(63, 185, 80, 0.3);
+  background-color: rgba(63, 185, 80, 0.08);
   color: var(--color-accent-strong);
 }
 
@@ -149,18 +141,14 @@ body {
 .work-index-hero,
 .work-page-hero {
   padding: clamp(1.25rem, 2.6vw, 1.8rem);
-  background:
-    radial-gradient(circle at 84% 14%, rgba(198, 221, 216, 0.42), transparent 26%),
-    radial-gradient(circle at 14% 100%, rgba(231, 211, 177, 0.4), transparent 34%),
-    linear-gradient(140deg, rgba(255, 255, 255, 0.92), rgba(246, 239, 230, 0.98));
+  background: #161b22;
 }
 
 .work-index-shell,
 .playground-shell,
 .playground-overview-shell,
 .playground-carryover-shell {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(244, 238, 229, 0.98));
+  background: #161b22;
 }
 
 .page-intro h1,
@@ -183,10 +171,7 @@ body {
 
 .hero-editorial {
   min-height: min(64vh, 520px);
-  background:
-    radial-gradient(circle at 84% 14%, rgba(198, 221, 216, 0.48), transparent 26%),
-    radial-gradient(circle at 12% 100%, rgba(232, 209, 173, 0.42), transparent 32%),
-    linear-gradient(140deg, rgba(255, 255, 255, 0.94), rgba(245, 238, 228, 0.98));
+  background: #161b22;
 }
 
 .hero-stack {
@@ -210,7 +195,7 @@ body {
 .hero .lede {
   max-width: 31rem;
   font-size: 1.03rem;
-  color: var(--color-ink-soft);
+  color: var(--color-paper-muted);
 }
 
 .hero-proof-row {
@@ -221,27 +206,27 @@ body {
 }
 
 .hero-proof-pill.hero-proof-stat {
-  border-radius: 20px;
-  border: 1px solid rgba(61, 116, 109, 0.12);
-  background: rgba(255, 255, 255, 0.76);
+  border-radius: 8px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #1c2128;
   padding: 0.95rem 1rem;
   display: grid;
   gap: 0.25rem;
 }
 
 .hero-proof-stat strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 1.55rem;
   line-height: 1;
   color: var(--color-ink);
 }
 
 .hero-proof-stat span {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.66rem;
   letter-spacing: 0.12rem;
   text-transform: uppercase;
-  color: rgba(75, 86, 97, 0.76);
+  color: var(--color-paper-muted);
 }
 
 .hero-loop-grid {
@@ -251,22 +236,22 @@ body {
 }
 
 .hero-loop-card {
-  border-top: 1px solid rgba(36, 46, 58, 0.08);
+  border-top: 1px solid rgba(240, 246, 252, 0.07);
   padding-top: 0.9rem;
   display: grid;
   gap: 0.25rem;
 }
 
 .hero-loop-card span {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.68rem;
   letter-spacing: 0.12rem;
   text-transform: uppercase;
-  color: rgba(75, 86, 97, 0.72);
+  color: var(--color-paper-muted);
 }
 
 .hero-loop-card strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.95rem;
   color: var(--color-ink);
 }
@@ -280,8 +265,7 @@ body {
 .home-story-section,
 .home-work-section,
 .home-fix-section {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(244, 238, 229, 0.98));
+  background: #161b22;
 }
 
 .home-story-section .split-header h2,
@@ -312,8 +296,8 @@ body {
 }
 
 .home-proof-card {
-  border: 1px solid rgba(61, 116, 109, 0.1);
-  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #1c2128;
 }
 
 .home-proof-card strong {
@@ -321,9 +305,7 @@ body {
 }
 
 .portfolio-telemetry {
-  background:
-    radial-gradient(circle at 88% 10%, rgba(198, 221, 216, 0.42), transparent 26%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(242, 246, 244, 0.98));
+  background: #161b22;
 }
 
 .telemetry-shell {
@@ -333,18 +315,17 @@ body {
 }
 
 .telemetry-status {
-  border-color: rgba(61, 116, 109, 0.12);
-  background: rgba(233, 242, 239, 0.84);
+  border-color: rgba(63, 185, 80, 0.25);
+  background: rgba(63, 185, 80, 0.1);
   color: var(--color-accent-strong);
 }
 
 .telemetry-stage {
-  border-radius: 24px;
-  border: 1px solid rgba(61, 116, 109, 0.12);
-  background:
-    linear-gradient(180deg, rgba(235, 245, 242, 0.96), rgba(225, 236, 232, 0.96));
+  border-radius: 8px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #1c2128;
   color: var(--color-ink);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow: none;
 }
 
 .telemetry-stage h3,
@@ -356,25 +337,24 @@ body {
 .telemetry-stat span,
 .telemetry-chart-head span,
 .telemetry-chart-scale {
-  color: rgba(75, 86, 97, 0.76);
+  color: var(--color-paper-muted);
 }
 
 .telemetry-stat,
 .telemetry-chart-card,
 .telemetry-panel,
 .telemetry-health-item {
-  border: 1px solid rgba(61, 116, 109, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  box-shadow: none;
 }
 
 .telemetry-stat,
 .telemetry-panel {
-  background: rgba(255, 255, 255, 0.76);
+  background: #1c2128;
 }
 
 .telemetry-stat-primary {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(226, 236, 232, 0.88));
+  background: #1c2128;
 }
 
 .telemetry-stat strong,
@@ -384,11 +364,11 @@ body {
 }
 
 .telemetry-chart-card {
-  background: rgba(255, 255, 255, 0.58);
+  background: #1c2128;
 }
 
 .telemetry-grid-line {
-  stroke: rgba(75, 86, 97, 0.12);
+  stroke: rgba(240, 246, 252, 0.07);
 }
 
 .telemetry-panel-head span,
@@ -396,11 +376,11 @@ body {
 .telemetry-feature-copy strong,
 .telemetry-feature-row small,
 .telemetry-empty-state {
-  color: rgba(75, 86, 97, 0.74);
+  color: var(--color-paper-muted);
 }
 
 .telemetry-feature-track {
-  background: rgba(61, 116, 109, 0.12);
+  background: rgba(63, 185, 80, 0.12);
 }
 
 .selected-work-grid {
@@ -410,9 +390,8 @@ body {
 
 .selected-work-card-flagship,
 .work-index-card-flagship {
-  background:
-    radial-gradient(circle at 86% 12%, rgba(198, 221, 216, 0.26), transparent 24%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(233, 241, 238, 0.96));
+  background: #1c2128;
+  border-color: rgba(63, 185, 80, 0.15);
 }
 
 .fix-feed-grid {
@@ -425,7 +404,7 @@ body {
 }
 
 .ops-tape-card {
-  border-top-color: rgba(36, 46, 58, 0.08);
+  border-top-color: rgba(240, 246, 252, 0.07);
 }
 
 .work-index-grid {
@@ -435,8 +414,7 @@ body {
 }
 
 .runtime-frame-surface {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(241, 235, 226, 0.98));
+  background: #161b22;
 }
 
 .runtime-frame-controls {
@@ -457,14 +435,14 @@ body {
 
 .runtime-state-pill {
   color: var(--color-accent-strong);
-  border-color: rgba(61, 116, 109, 0.14);
-  background: rgba(233, 242, 239, 0.82);
+  border-color: rgba(63, 185, 80, 0.25);
+  background: rgba(63, 185, 80, 0.1);
 }
 
 .runtime-state-pill-danger {
-  color: #925c44;
-  border-color: rgba(146, 92, 68, 0.16);
-  background: rgba(249, 238, 231, 0.84);
+  color: #d29922;
+  border-color: rgba(210, 153, 34, 0.25);
+  background: rgba(210, 153, 34, 0.1);
 }
 
 .demo-frame {
@@ -490,7 +468,7 @@ body {
 
 .runtime-panel-card h4,
 .demo-grid article h4 {
-  color: #ffffff;
+  color: var(--color-ink);
 }
 
 .runtime-panel-card p,
@@ -500,7 +478,7 @@ body {
 }
 
 .runtime-panel-card .tag {
-  color: var(--color-accent-soft);
+  color: var(--color-accent);
 }
 
 .proof-stat-grid,
@@ -574,40 +552,39 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1px solid rgba(61, 116, 109, 0.14);
+  border: 1px solid rgba(63, 185, 80, 0.2);
   padding: 0.28rem 0.6rem;
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.62rem;
   letter-spacing: 0.14rem;
   text-transform: uppercase;
   color: var(--color-accent-strong);
-  background: rgba(233, 242, 239, 0.86);
+  background: rgba(63, 185, 80, 0.08);
 }
 
 .playground-status-pill-active {
-  border-color: rgba(61, 116, 109, 0.18);
+  border-color: rgba(63, 185, 80, 0.3);
 }
 
 .playground-status-pill-shipped {
-  border-color: rgba(40, 79, 74, 0.14);
-  background: rgba(230, 241, 237, 0.92);
+  border-color: rgba(63, 185, 80, 0.2);
+  background: rgba(63, 185, 80, 0.06);
 }
 
 .playground-status-pill-exploratory {
-  border-color: rgba(146, 92, 68, 0.16);
-  background: rgba(249, 238, 231, 0.92);
-  color: #925c44;
+  border-color: rgba(210, 153, 34, 0.25);
+  background: rgba(210, 153, 34, 0.1);
+  color: #d29922;
 }
 
 .experiment-select-card.active,
 .playground-workbench {
-  border-color: rgba(61, 116, 109, 0.16);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(232, 241, 238, 0.96));
+  border-color: rgba(63, 185, 80, 0.2);
+  background: #1c2128;
 }
 
 .playground-workbench {
-  border-radius: 24px;
+  border-radius: 10px;
   position: static;
   top: auto;
 }
@@ -615,17 +592,16 @@ body {
 .workbench-question {
   font-size: 0.96rem;
   line-height: 1.55;
-  color: var(--color-ink-soft);
+  color: var(--color-paper-muted);
 }
 
 .workbench-visual-shell {
-  border-radius: 18px;
-  border: 1px solid rgba(61, 116, 109, 0.12);
+  border-radius: 6px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
   padding: 0.95rem;
   display: grid;
   gap: 0.8rem;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(228, 238, 234, 0.92));
+  background: #161b22;
 }
 
 .workbench-stage-head {
@@ -637,10 +613,10 @@ body {
 
 .workbench-stage-head span,
 .workbench-visual-note {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.7rem;
   letter-spacing: 0.1rem;
-  color: rgba(75, 86, 97, 0.72);
+  color: var(--color-paper-muted);
 }
 
 .workbench-stage-head span {
@@ -648,7 +624,7 @@ body {
 }
 
 .workbench-stage-head strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.8rem;
   color: var(--color-ink);
 }
@@ -660,20 +636,20 @@ body {
 }
 
 .playground-focus-inline-card {
-  border-radius: 16px;
-  border: 1px solid rgba(61, 116, 109, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
   padding: 0.8rem 0.9rem;
   display: grid;
   gap: 0.3rem;
-  background: rgba(255, 255, 255, 0.58);
+  background: #161b22;
 }
 
 .playground-focus-inline-card span {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.64rem;
   letter-spacing: 0.12rem;
   text-transform: uppercase;
-  color: rgba(75, 86, 97, 0.72);
+  color: var(--color-paper-muted);
 }
 
 .playground-focus-inline-card strong {
@@ -716,10 +692,10 @@ body {
 .ttl-card,
 .fingerprint-event,
 .auth-step {
-  border-radius: 14px;
-  border: 1px solid rgba(61, 116, 109, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
   padding: 0.75rem 0.85rem;
-  background: rgba(255, 255, 255, 0.58);
+  background: #161b22;
 }
 
 .retry-attempt-head,
@@ -736,18 +712,18 @@ body {
 .queue-column span,
 .fingerprint-event span,
 .auth-step span {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.66rem;
   letter-spacing: 0.1rem;
   text-transform: uppercase;
-  color: rgba(75, 86, 97, 0.72);
+  color: var(--color-paper-muted);
 }
 
 .retry-attempt-head strong,
 .ttl-card-head strong,
 .fingerprint-event strong,
 .auth-step strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.82rem;
   color: var(--color-ink);
 }
@@ -766,21 +742,21 @@ body {
 
 .heartbeat-bar {
   border-radius: 999px 999px 6px 6px;
-  background: linear-gradient(180deg, #8fbcaf, var(--color-accent));
+  background: linear-gradient(180deg, #56d364, var(--color-accent));
 }
 
 .heartbeat-bar.stale {
-  background: linear-gradient(180deg, #d8b0a2, #925c44);
+  background: linear-gradient(180deg, #9e6a03, #d29922);
 }
 
 .heartbeat-meta {
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.7rem;
   letter-spacing: 0.08rem;
-  color: rgba(75, 86, 97, 0.76);
+  color: var(--color-paper-muted);
 }
 
 .queue-columns {
@@ -805,15 +781,15 @@ body {
 .queue-pill {
   height: 0.8rem;
   border-radius: 999px;
-  background: rgba(61, 116, 109, 0.22);
+  background: rgba(63, 185, 80, 0.15);
 }
 
 .queue-pill-good {
-  background: linear-gradient(90deg, #8fbcaf, var(--color-accent));
+  background: linear-gradient(90deg, #238636, var(--color-accent));
 }
 
 .queue-pill-warn {
-  background: linear-gradient(90deg, #d7c8b0, #b17b63);
+  background: linear-gradient(90deg, #9e6a03, #d29922);
 }
 
 .fingerprint-event {
@@ -824,14 +800,14 @@ body {
 }
 
 .fingerprint-event.accepted {
-  border-color: rgba(61, 116, 109, 0.12);
+  border-color: rgba(63, 185, 80, 0.2);
 }
 
 .fingerprint-event.suppressed,
 .fingerprint-event.duplicate,
 .fingerprint-event.missed {
-  border-color: rgba(146, 92, 68, 0.18);
-  background: rgba(249, 238, 231, 0.82);
+  border-color: rgba(210, 153, 34, 0.25);
+  background: rgba(210, 153, 34, 0.08);
 }
 
 .auth-flow {
@@ -839,12 +815,12 @@ body {
 }
 
 .auth-step.good {
-  border-color: rgba(61, 116, 109, 0.12);
+  border-color: rgba(63, 185, 80, 0.2);
 }
 
 .auth-step.warn {
-  border-color: rgba(146, 92, 68, 0.18);
-  background: rgba(249, 238, 231, 0.82);
+  border-color: rgba(210, 153, 34, 0.25);
+  background: rgba(210, 153, 34, 0.08);
 }
 
 .depth-stage {
@@ -864,8 +840,8 @@ body {
   right: 10%;
   bottom: 1.5rem;
   height: 3rem;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 8px;
+  border: 1px solid rgba(240, 246, 252, 0.2);
   padding: 0.8rem 1rem;
   display: flex;
   justify-content: space-between;
@@ -876,8 +852,8 @@ body {
 
 .depth-layer span,
 .depth-layer strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
-  color: #f7fbfa;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  color: var(--color-ink);
 }
 
 .depth-layer-queue {
@@ -902,10 +878,10 @@ body {
 }
 
 .workbench-signal-card {
-  border-radius: 16px;
-  border: 1px solid rgba(61, 116, 109, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
   padding: 0.8rem 0.9rem;
-  background: rgba(255, 255, 255, 0.56);
+  background: #161b22;
 }
 
 .playground-carryover-grid {
@@ -913,9 +889,9 @@ body {
 }
 
 .receipt-snippet {
-  border-radius: 16px;
-  border-color: rgba(183, 221, 214, 0.16);
-  background: rgba(20, 31, 37, 0.94);
+  border-radius: 6px;
+  border-color: rgba(240, 246, 252, 0.07);
+  background: rgba(13, 17, 23, 0.96);
 }
 
 .quick-jump {
@@ -923,11 +899,11 @@ body {
 }
 
 .quick-jump a {
-  color: var(--color-accent-strong);
+  color: var(--color-accent);
 }
 
 .footer {
-  background: rgba(255, 250, 243, 0.72);
+  background: transparent;
 }
 
 @media (max-width: 960px) {
@@ -989,32 +965,30 @@ body {
 /* Final hero/nav overrides */
 
 .app-shell > .top-nav {
-  background: rgba(250, 247, 241, 0.9);
-  border-bottom: 1px solid rgba(36, 46, 58, 0.08);
-  box-shadow: 0 8px 24px rgba(24, 32, 40, 0.04);
+  background: rgba(13, 17, 23, 0.88);
+  border-bottom: 1px solid rgba(240, 246, 252, 0.07);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .app-shell > .top-nav .brand,
 .app-shell > .top-nav .nav-link {
-  color: var(--color-ink);
+  color: var(--color-paper-muted);
 }
 
 .app-shell > .top-nav .nav-link {
-  opacity: 0.78;
+  opacity: 1;
 }
 
 .app-shell > .top-nav .nav-link.active,
 .app-shell > .top-nav .nav-link:hover {
+  color: var(--color-ink);
   opacity: 1;
 }
 
 .home-stack > .hero.hero-editorial {
   min-height: 0;
   padding: clamp(1.4rem, 2.8vw, 2rem);
-  background:
-    radial-gradient(circle at 82% 18%, rgba(198, 221, 216, 0.54), transparent 26%),
-    radial-gradient(circle at 12% 100%, rgba(231, 223, 207, 0.86), transparent 30%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(242, 237, 228, 0.98));
+  background: #161b22;
 }
 
 .home-stack > .hero.hero-editorial .hero-grid-balanced {
@@ -1048,14 +1022,13 @@ body {
 }
 
 .home-stack > .hero.hero-editorial .hero-proof-panel {
-  border-radius: 22px;
+  border-radius: 8px;
   padding: 1rem;
   display: grid;
   gap: 0.95rem;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(233, 241, 238, 0.92));
-  border: 1px solid rgba(61, 116, 109, 0.12);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+  background: #1c2128;
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  box-shadow: none;
 }
 
 .home-stack > .hero.hero-editorial .hero-proof-head {
@@ -1066,7 +1039,7 @@ body {
 .home-stack > .hero.hero-editorial .hero-proof-kicker {
   font-size: 0.92rem;
   line-height: 1.45;
-  color: var(--color-ink-soft);
+  color: var(--color-paper-muted);
 }
 
 .home-stack > .hero.hero-editorial .hero-proof-grid {
@@ -1076,10 +1049,10 @@ body {
 }
 
 .home-stack > .hero.hero-editorial .hero-proof-pill.hero-proof-stat {
-  border-radius: 18px;
+  border-radius: 6px;
   padding: 0.9rem;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(61, 116, 109, 0.1);
+  background: #161b22;
+  border: 1px solid rgba(240, 246, 252, 0.07);
 }
 
 .home-stack > .hero.hero-editorial .hero-proof-stat strong {
@@ -1112,12 +1085,12 @@ body {
 
 .home-stack > .hero.hero-editorial .hero-loop-row span,
 .home-stack > .hero.hero-editorial .hero-loop-row strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.78rem;
 }
 
 .home-stack > .hero.hero-editorial .hero-loop-row span {
-  color: var(--color-ink-soft);
+  color: var(--color-paper-muted);
 }
 
 .home-stack > .hero.hero-editorial .hero-loop-row strong {
@@ -1163,13 +1136,13 @@ body {
 .shell-orbit-left {
   top: 6rem;
   left: -14rem;
-  background: radial-gradient(circle, rgba(198, 221, 216, 0.56), transparent 68%);
+  background: radial-gradient(circle, rgba(63, 185, 80, 0.08), transparent 68%);
 }
 
 .shell-orbit-right {
   right: -14rem;
   bottom: 8rem;
-  background: radial-gradient(circle, rgba(229, 210, 177, 0.56), transparent 68%);
+  background: radial-gradient(circle, rgba(63, 185, 80, 0.04), transparent 68%);
 }
 
 .page-wrap-authored,
@@ -1196,7 +1169,7 @@ body {
   align-items: flex-start;
   gap: 1rem;
   padding: 0.95rem clamp(1rem, 2.4vw, 1.9rem);
-  background: rgba(250, 247, 241, 0.84);
+  background: rgba(13, 17, 23, 0.88);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(36, 46, 58, 0.08);
 }
@@ -1213,9 +1186,9 @@ body {
 }
 
 .brand-block .brand-sub {
-  font-family: "Newsreader", Georgia, serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.84rem;
-  color: rgba(75, 86, 97, 0.88);
+  color: var(--color-paper-muted);
 }
 
 .nav-cluster {
@@ -1232,10 +1205,10 @@ body {
   align-items: start;
   min-width: 8.2rem;
   padding: 0.6rem 0.76rem 0.66rem;
-  border-radius: 16px;
-  border: 1px solid rgba(36, 46, 58, 0.08);
-  background: rgba(255, 255, 255, 0.46);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  border-radius: 8px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: rgba(28, 33, 40, 0.7);
+  box-shadow: none;
 }
 
 .top-nav-authored .nav-link::after {
@@ -1244,8 +1217,8 @@ body {
 
 .top-nav-authored .nav-link.active,
 .top-nav-authored .nav-link:hover {
-  background: rgba(233, 242, 239, 0.92);
-  border-color: rgba(61, 116, 109, 0.18);
+  background: rgba(63, 185, 80, 0.08);
+  border-color: rgba(63, 185, 80, 0.25);
   transform: translateY(-1px);
 }
 
@@ -1254,7 +1227,7 @@ body {
   font-size: 0.6rem;
   line-height: 1.2;
   letter-spacing: 0.1rem;
-  color: rgba(75, 86, 97, 0.72);
+  color: var(--color-paper-muted);
 }
 
 .nav-copy {
@@ -1263,17 +1236,18 @@ body {
 }
 
 .nav-copy strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.8rem;
   line-height: 1;
   font-weight: 500;
+  color: var(--color-ink);
 }
 
 .nav-copy small {
-  font-family: "Newsreader", Georgia, serif;
+  font-family: "Geist", system-ui, sans-serif;
   font-size: 0.7rem;
   line-height: 1.2;
-  color: rgba(75, 86, 97, 0.8);
+  color: var(--color-paper-muted);
 }
 
 .home-stack {
@@ -1284,10 +1258,8 @@ body {
   position: relative;
   overflow: hidden;
   padding: clamp(1.35rem, 2.9vw, 2rem);
-  background:
-    radial-gradient(circle at 82% 18%, rgba(198, 221, 216, 0.54), transparent 24%),
-    radial-gradient(circle at 10% 100%, rgba(232, 211, 179, 0.42), transparent 28%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(242, 237, 229, 0.98));
+  background: #161b22;
+  border-color: rgba(240, 246, 252, 0.07);
 }
 
 .home-hero-layout {
@@ -1331,10 +1303,10 @@ body {
   display: grid;
   gap: 0.18rem;
   padding: 0.85rem 0.95rem;
-  border-radius: 18px;
-  border: 1px solid rgba(36, 46, 58, 0.08);
-  background: rgba(255, 255, 255, 0.58);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #1c2128;
+  box-shadow: none;
   transition:
     transform 180ms ease,
     border-color 180ms ease,
@@ -1343,19 +1315,19 @@ body {
 
 .chapter-rail-link:hover {
   transform: translateY(-2px);
-  border-color: rgba(61, 116, 109, 0.18);
-  background: rgba(233, 242, 239, 0.84);
+  border-color: rgba(63, 185, 80, 0.25);
+  background: rgba(63, 185, 80, 0.05);
 }
 
 .chapter-rail-link span {
   font-family: "IBM Plex Mono", "Consolas", monospace;
   font-size: 0.68rem;
   letter-spacing: 0.14rem;
-  color: rgba(75, 86, 97, 0.72);
+  color: var(--color-paper-muted);
 }
 
 .chapter-rail-link strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.94rem;
   color: var(--color-ink);
 }
@@ -1363,7 +1335,7 @@ body {
 .chapter-rail-link small {
   font-size: 0.84rem;
   line-height: 1.25;
-  color: rgba(75, 86, 97, 0.84);
+  color: var(--color-paper-muted);
 }
 
 .hero-tableau {
@@ -1371,14 +1343,10 @@ body {
   display: grid;
   gap: 1rem;
   padding: 1.1rem;
-  border-radius: 24px;
-  border: 1px solid rgba(61, 116, 109, 0.12);
-  background:
-    radial-gradient(circle at 84% 10%, rgba(198, 221, 216, 0.52), transparent 24%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(232, 241, 238, 0.94));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.82),
-    0 22px 42px rgba(24, 32, 40, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #1c2128;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .hero-tableau::before {
@@ -1386,9 +1354,9 @@ body {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, transparent 0 12%, rgba(36, 46, 58, 0.04) 12.1% 12.2%, transparent 12.3%),
-    linear-gradient(180deg, transparent 0 18%, rgba(36, 46, 58, 0.03) 18.1% 18.2%, transparent 18.3%);
-  opacity: 0.3;
+    linear-gradient(90deg, transparent 0 12%, rgba(240, 246, 252, 0.015) 12.1% 12.2%, transparent 12.3%),
+    linear-gradient(180deg, transparent 0 18%, rgba(240, 246, 252, 0.01) 18.1% 18.2%, transparent 18.3%);
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -1415,7 +1383,7 @@ body {
 }
 
 .hero-skyline-count {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 1.45rem;
   line-height: 1;
   color: var(--color-ink);
@@ -1426,28 +1394,31 @@ body {
   display: flex;
   align-items: end;
   padding: 0.3rem;
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(222, 233, 229, 0.88));
-  border: 1px solid rgba(61, 116, 109, 0.08);
+  border-radius: 6px;
+  background: rgba(13, 17, 23, 0.8);
+  border: 1px solid rgba(240, 246, 252, 0.07);
 }
 
 .hero-skyline-fill {
   width: 100%;
-  border-radius: 14px;
-  background: linear-gradient(180deg, #9dc9c1 0%, #5c9188 58%, #284f4a 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.36);
+  border-radius: 4px;
+  background: linear-gradient(180deg, #56d364 0%, #3fb950 58%, #238636 100%);
+  box-shadow: 0 0 12px rgba(63, 185, 80, 0.2);
 }
 
 .hero-skyline-column:nth-child(2) .hero-skyline-fill {
-  background: linear-gradient(180deg, #d7e3c8 0%, #88a57b 58%, #46634a 100%);
+  background: linear-gradient(180deg, #56d364 0%, #3fb950 58%, #238636 100%);
+  opacity: 0.82;
 }
 
 .hero-skyline-column:nth-child(3) .hero-skyline-fill {
-  background: linear-gradient(180deg, #cad8dd 0%, #7593a4 58%, #325061 100%);
+  background: linear-gradient(180deg, #56d364 0%, #3fb950 58%, #238636 100%);
+  opacity: 0.65;
 }
 
 .hero-skyline-column:nth-child(4) .hero-skyline-fill {
-  background: linear-gradient(180deg, #e4dac4 0%, #b69d75 58%, #785b36 100%);
+  background: linear-gradient(180deg, #56d364 0%, #3fb950 58%, #238636 100%);
+  opacity: 0.5;
 }
 
 .hero-skyline-column small {
@@ -1455,7 +1426,7 @@ body {
   font-size: 0.68rem;
   letter-spacing: 0.11rem;
   text-transform: uppercase;
-  color: rgba(75, 86, 97, 0.76);
+  color: var(--color-paper-muted);
 }
 
 .hero-loop-ribbon,
@@ -1470,9 +1441,9 @@ body {
   display: grid;
   gap: 0.26rem;
   padding: 0.82rem 0.9rem;
-  border-radius: 16px;
-  border: 1px solid rgba(61, 116, 109, 0.08);
-  background: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #161b22;
 }
 
 .hero-loop-chip span,
@@ -1481,12 +1452,12 @@ body {
   font-size: 0.67rem;
   letter-spacing: 0.08rem;
   text-transform: uppercase;
-  color: rgba(75, 86, 97, 0.74);
+  color: var(--color-paper-muted);
 }
 
 .hero-loop-chip strong,
 .hero-stage-fact strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.9rem;
   line-height: 1.2;
   color: var(--color-ink);
@@ -1506,16 +1477,16 @@ body {
 .hero-surface-pill {
   padding: 0.38rem 0.62rem;
   border-radius: 999px;
-  border: 1px solid rgba(61, 116, 109, 0.1);
-  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(63, 185, 80, 0.2);
+  background: rgba(63, 185, 80, 0.08);
   font-family: "IBM Plex Mono", "Consolas", monospace;
   font-size: 0.72rem;
-  color: rgba(40, 79, 74, 0.94);
+  color: var(--color-accent-strong);
 }
 
 .hero-tableau-link {
   justify-self: start;
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.82rem;
   letter-spacing: 0.08rem;
   text-transform: uppercase;
@@ -1537,10 +1508,10 @@ body {
 }
 
 .chapter-index-block span {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 2rem;
   line-height: 0.95;
-  color: var(--color-ink);
+  color: var(--color-accent);
 }
 
 .chapter-index-block small {
@@ -1548,7 +1519,7 @@ body {
   font-size: 0.67rem;
   letter-spacing: 0.12rem;
   text-transform: uppercase;
-  color: rgba(75, 86, 97, 0.72);
+  color: var(--color-paper-muted);
 }
 
 .chapter-header h2 {
@@ -1560,7 +1531,7 @@ body {
   max-width: 44rem;
   font-size: 0.98rem;
   line-height: 1.55;
-  color: var(--color-ink-soft);
+  color: var(--color-paper-muted);
 }
 
 .portfolio-telemetry {
@@ -1576,7 +1547,7 @@ body {
   width: 18rem;
   height: 18rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(183, 221, 214, 0.6), transparent 68%);
+  background: radial-gradient(circle, rgba(63, 185, 80, 0.1), transparent 68%);
   opacity: 0.65;
   pointer-events: none;
 }
@@ -1644,10 +1615,9 @@ body {
 .build-flagship-card {
   display: grid;
   gap: 1rem;
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 88% 10%, rgba(198, 221, 216, 0.32), transparent 24%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(233, 241, 238, 0.96));
+  border-radius: 10px;
+  background: #1c2128;
+  border-color: rgba(63, 185, 80, 0.12);
 }
 
 .build-card-head {
@@ -1661,7 +1631,7 @@ body {
   max-width: 46rem;
   font-size: 1rem;
   line-height: 1.6;
-  color: var(--color-ink-soft);
+  color: var(--color-paper-muted);
 }
 
 .build-arc-timeline {
@@ -1674,9 +1644,9 @@ body {
   display: grid;
   gap: 0.3rem;
   padding: 0.95rem;
-  border-radius: 18px;
-  border: 1px solid rgba(61, 116, 109, 0.08);
-  background: rgba(255, 255, 255, 0.68);
+  border-radius: 6px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #161b22;
 }
 
 .build-arc-step span {
@@ -1684,11 +1654,11 @@ body {
   font-size: 0.68rem;
   letter-spacing: 0.12rem;
   text-transform: uppercase;
-  color: rgba(75, 86, 97, 0.74);
+  color: var(--color-paper-muted);
 }
 
 .build-arc-step strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.96rem;
   color: var(--color-ink);
 }
@@ -1700,7 +1670,7 @@ body {
 }
 
 .build-arc-step small {
-  color: var(--color-ink-soft);
+  color: var(--color-paper-muted);
 }
 
 .home-build-side {
@@ -1728,7 +1698,7 @@ body {
   display: grid;
   gap: 0.32rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(36, 46, 58, 0.08);
+  border-top: 1px solid rgba(240, 246, 252, 0.07);
 }
 
 .build-panel-row:first-child {
@@ -1737,7 +1707,7 @@ body {
 }
 
 .build-panel-row strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 0.95rem;
 }
 
@@ -1750,9 +1720,9 @@ body {
 .fix-step-card {
   display: grid;
   gap: 0.8rem;
-  border-radius: 22px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(246, 240, 232, 0.96));
+  border-radius: 8px;
+  background: #1c2128;
+  border-color: rgba(240, 246, 252, 0.07);
 }
 
 .fix-step-top {
@@ -1763,17 +1733,17 @@ body {
 }
 
 .fix-step-top span {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 1.6rem;
   line-height: 1;
-  color: rgba(40, 79, 74, 0.94);
+  color: var(--color-accent);
 }
 
 .fix-commit {
   font-family: "IBM Plex Mono", "Consolas", monospace;
   font-size: 0.73rem;
   line-height: 1.45;
-  color: rgba(40, 79, 74, 0.92);
+  color: var(--color-paper-muted);
 }
 
 .footer {
@@ -1785,11 +1755,11 @@ body {
   padding: 0 0.2rem;
   width: min(1180px, calc(100% - 2rem));
   background: transparent;
-  color: rgba(75, 86, 97, 0.92);
+  color: var(--color-paper-muted);
 }
 
 .footer a {
-  color: var(--color-accent-strong);
+  color: var(--color-accent);
 }
 
 @media (max-width: 1100px) {
@@ -1866,9 +1836,7 @@ body {
 .playground-hero,
 .playground-shell,
 .playground-carryover-shell {
-  background:
-    radial-gradient(circle at 88% 12%, rgba(198, 221, 216, 0.34), transparent 24%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(243, 238, 229, 0.98));
+  background: #161b22;
 }
 
 .playground-hero-layout {
@@ -1907,19 +1875,18 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1px solid rgba(61, 116, 109, 0.12);
+  border: 1px solid rgba(63, 185, 80, 0.2);
   padding: 0.55rem 0.85rem;
   font-family: "IBM Plex Mono", "Consolas", monospace;
   font-size: 0.72rem;
   line-height: 1;
-  color: rgba(40, 79, 74, 0.94);
-  background: rgba(255, 255, 255, 0.72);
+  color: var(--color-accent-strong);
+  background: rgba(63, 185, 80, 0.08);
 }
 
 .playground-rules-card {
-  border: 1px solid rgba(61, 116, 109, 0.12);
-  background:
-    linear-gradient(180deg, rgba(244, 248, 246, 0.96), rgba(231, 239, 236, 0.98));
+  border: 1px solid rgba(63, 185, 80, 0.15);
+  background: #1c2128;
 }
 
 .playground-rules-card h2 {
@@ -1937,7 +1904,7 @@ body {
   gap: 0.9rem;
   align-items: start;
   padding-top: 0.85rem;
-  border-top: 1px solid rgba(36, 46, 58, 0.08);
+  border-top: 1px solid rgba(240, 246, 252, 0.07);
 }
 
 .playground-rule-item:first-child {
@@ -1946,10 +1913,10 @@ body {
 }
 
 .playground-rule-item span {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 1.4rem;
   line-height: 1;
-  color: rgba(40, 79, 74, 0.88);
+  color: var(--color-accent);
 }
 
 .playground-rule-item p {
@@ -1964,8 +1931,8 @@ body {
 }
 
 .playground-brief-card {
-  border: 1px solid rgba(61, 116, 109, 0.1);
-  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #1c2128;
 }
 
 .playground-grid {
@@ -1978,8 +1945,8 @@ body {
 }
 
 .experiment-select-card {
-  border: 1px solid rgba(61, 116, 109, 0.08);
-  background: rgba(255, 255, 255, 0.64);
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #1c2128;
   transition:
     transform 160ms ease,
     border-color 160ms ease,
@@ -1988,21 +1955,21 @@ body {
 
 .experiment-select-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(61, 116, 109, 0.14);
-  box-shadow: 0 14px 28px rgba(25, 34, 43, 0.06);
+  border-color: rgba(63, 185, 80, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .experiment-card-summary {
   font-size: 1rem;
   line-height: 1.6;
-  color: var(--color-ink);
+  color: var(--color-paper-muted);
 }
 
 .experiment-card-block {
   display: grid;
   gap: 0.35rem;
   padding-top: 0.8rem;
-  border-top: 1px solid rgba(36, 46, 58, 0.08);
+  border-top: 1px solid rgba(240, 246, 252, 0.07);
 }
 
 .experiment-card-block span,
@@ -2011,12 +1978,12 @@ body {
   font-size: 0.68rem;
   letter-spacing: 0.1rem;
   text-transform: uppercase;
-  color: rgba(75, 86, 97, 0.72);
+  color: var(--color-paper-muted);
 }
 
 .experiment-card-meta,
 .experiment-card-tools {
-  color: var(--color-ink-soft);
+  color: var(--color-paper-muted);
 }
 
 .experiment-open-link {
@@ -2028,10 +1995,9 @@ body {
   position: sticky;
   top: 1rem;
   gap: 1rem;
-  border: 1px solid rgba(61, 116, 109, 0.14);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(234, 242, 239, 0.98));
-  box-shadow: 0 16px 36px rgba(22, 31, 37, 0.07);
+  border: 1px solid rgba(63, 185, 80, 0.15);
+  background: #1c2128;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .playground-workbench-head {
@@ -2046,21 +2012,21 @@ body {
 .playground-workbench-intro {
   font-size: 1rem;
   line-height: 1.6;
-  color: var(--color-ink-soft);
+  color: var(--color-paper-muted);
 }
 
 .playground-verdict {
   display: grid;
   gap: 0.45rem;
   padding: 1rem 1.05rem;
-  border-radius: 20px;
-  border: 1px solid rgba(61, 116, 109, 0.12);
-  background: rgba(255, 255, 255, 0.74);
+  border-radius: 8px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #161b22;
 }
 
 .playground-verdict h4,
 .playground-readout-card h4 {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 1.05rem;
   line-height: 1.35;
   color: var(--color-ink);
@@ -2068,20 +2034,20 @@ body {
 
 .playground-verdict-warning,
 .playground-readout-card-warning {
-  border-color: rgba(146, 92, 68, 0.18);
-  background: rgba(249, 238, 231, 0.9);
+  border-color: rgba(210, 153, 34, 0.25);
+  background: rgba(210, 153, 34, 0.08);
 }
 
 .playground-verdict-steady,
 .playground-readout-card-steady {
-  border-color: rgba(61, 116, 109, 0.14);
-  background: rgba(233, 242, 239, 0.86);
+  border-color: rgba(63, 185, 80, 0.2);
+  background: rgba(63, 185, 80, 0.06);
 }
 
 .playground-verdict-curious,
 .playground-readout-card-curious {
-  border-color: rgba(88, 96, 126, 0.14);
-  background: rgba(239, 241, 247, 0.86);
+  border-color: rgba(88, 96, 126, 0.25);
+  background: rgba(88, 96, 126, 0.08);
 }
 
 .playground-workbench-story {
@@ -2094,15 +2060,15 @@ body {
   display: grid;
   gap: 0.45rem;
   padding: 1rem;
-  border-radius: 18px;
-  border: 1px solid rgba(61, 116, 109, 0.1);
-  background: rgba(255, 255, 255, 0.66);
+  border-radius: 8px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #161b22;
 }
 
 .playground-workbench-note {
   font-size: 0.86rem;
   line-height: 1.55;
-  color: rgba(75, 86, 97, 0.84);
+  color: var(--color-paper-muted);
 }
 
 .button-row.compact.workbench-presets {
@@ -2116,10 +2082,10 @@ body {
 
 .workbench-slider-row,
 .workbench-toggle-row {
-  border-radius: 18px;
-  border: 1px solid rgba(61, 116, 109, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
   padding: 0.9rem;
-  background: rgba(255, 255, 255, 0.58);
+  background: #161b22;
 }
 
 .workbench-toggle-row {
@@ -2130,8 +2096,7 @@ body {
 
 .workbench-visual-shell {
   padding: 1rem;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(228, 238, 234, 0.94));
+  background: #161b22;
 }
 
 .playground-metric-grid {
@@ -2144,13 +2109,13 @@ body {
   display: grid;
   gap: 0.35rem;
   padding: 0.85rem 0.9rem;
-  border-radius: 16px;
-  border: 1px solid rgba(61, 116, 109, 0.08);
-  background: rgba(255, 255, 255, 0.64);
+  border-radius: 6px;
+  border: 1px solid rgba(240, 246, 252, 0.07);
+  background: #161b22;
 }
 
 .playground-metric-card strong {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 1rem;
   color: var(--color-ink);
 }
@@ -2165,7 +2130,8 @@ body {
 }
 
 .workbench-signal-card {
-  background: rgba(255, 255, 255, 0.62);
+  background: #161b22;
+  border-color: rgba(240, 246, 252, 0.07);
 }
 
 .playground-carryover-layout {
@@ -2181,14 +2147,13 @@ body {
 }
 
 .playground-carryover-card {
-  border: 1px solid rgba(61, 116, 109, 0.1);
-  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(63, 185, 80, 0.12);
+  background: #1c2128;
 }
 
 .playground-cut-card {
-  border: 1px solid rgba(146, 92, 68, 0.16);
-  background:
-    linear-gradient(180deg, rgba(255, 249, 245, 0.96), rgba(245, 234, 226, 0.98));
+  border: 1px solid rgba(210, 153, 34, 0.2);
+  background: rgba(210, 153, 34, 0.05);
 }
 
 .playground-active-strip {
@@ -2199,9 +2164,8 @@ body {
 }
 
 .playground-active-card {
-  border: 1px solid rgba(61, 116, 109, 0.1);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(236, 243, 240, 0.96));
+  border: 1px solid rgba(63, 185, 80, 0.15);
+  background: #1c2128;
 }
 
 @media (max-width: 1100px) {

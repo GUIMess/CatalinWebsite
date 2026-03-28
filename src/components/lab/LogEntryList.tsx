@@ -42,7 +42,7 @@ export function LogEntryList({ entries }: LogEntryListProps) {
       <div className="split-header">
         <div>
           <p className="eyebrow">Change Log</p>
-          <h2>Filter the timeline by theme, stage, or tool.</h2>
+          <h2>{entries.length} changes, newest first.</h2>
         </div>
       </div>
 

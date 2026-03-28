@@ -98,8 +98,7 @@ export function PlaygroundPage() {
             <p className="eyebrow">Playground</p>
             <h1>This page has to earn your time.</h1>
             <p>
-              These are small labs for real product questions. If an experiment only looks clever, it does not belong
-              here.
+              Small labs, each built around one real product question.
             </p>
             <p className="muted">
               Pick a problem, break it on purpose, then pull it back to something you would actually trust.
@@ -130,10 +129,7 @@ export function PlaygroundPage() {
         <div className="split-header">
           <div>
             <p className="eyebrow">Pick A Problem</p>
-            <h2>Each card is a tiny pressure test with a reason to exist.</h2>
-            <p className="chapter-copy">
-              The goal is not to admire widgets. The goal is to make one decision clearer.
-            </p>
+            <h2>Pick a problem.</h2>
           </div>
           {activeExperiment ? (
             <span className={`playground-status-pill playground-status-pill-${activeExperiment.status}`}>
@@ -183,9 +179,6 @@ export function PlaygroundPage() {
           <div>
             <p className="eyebrow">What Survived</p>
             <h2>The useful bits shipped. The rest stayed in the lab.</h2>
-            <p className="chapter-copy">
-              That is the point of the playground: find the part worth stealing, then throw the rest away.
-            </p>
           </div>
         </div>
         <div className="playground-carryover-layout">

@@ -19,7 +19,7 @@ export function LabLogPage() {
         <p className="eyebrow">Build Feed</p>
         <h1>Recent changes, in order.</h1>
         <p>
-          Short notes on what changed, what it taught me, and where it connects back to the larger system.
+          What changed and what it taught me.
         </p>
       </section>
       <LogEntryList entries={sortedEntries} />

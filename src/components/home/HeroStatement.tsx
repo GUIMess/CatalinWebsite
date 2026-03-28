@@ -28,7 +28,7 @@ const skylineStats = [
 const fastLoops = snapshot.schedulerLoops.slice(0, 3);
 const chapterLinks = [
   { href: "#live-proof", index: "01", label: "Live proof", note: "runtime telemetry" },
-  { href: "#system-builds", index: "02", label: "Build arc", note: "flagship + companion" },
+  { href: "#system-builds", index: "02", label: "Build arc", note: "flagship system" },
   { href: "#recent-fixes", index: "03", label: "Recent fixes", note: "real break / fix work" }
 ];
 const safeSurfaces =
@@ -60,8 +60,7 @@ export function HeroStatement() {
             show up.
           </h1>
           <p className="lede">
-            I build and run production bot systems, operator surfaces, and the repair work that keeps a busy audience
-            informed without turning the codebase into sludge.
+            I build and maintain a production Discord bot that delivers live scores, rankings, and news to a large sports community — solo, on Railway, with a real ops layer behind it.
           </p>
           <div className="button-row hero-actions">
             <Link className="inline-link" to="/work/live-alert-bot-core">
@@ -84,7 +83,7 @@ export function HeroStatement() {
         <aside className="hero-tableau" aria-label="System footprint">
           <div className="hero-tableau-head">
             <p className="tag">Current shape</p>
-            <p className="hero-proof-kicker">Source-backed footprint pulled from the sanitized bot repository.</p>
+            <p className="hero-proof-kicker">From the live repository.</p>
           </div>
           <div className="hero-skyline" aria-label="System footprint skyline">
             {skylineStats.map((stat) => {

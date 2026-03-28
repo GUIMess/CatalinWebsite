@@ -12,12 +12,9 @@ body,
 }
 
 body {
-  font-family: "Newsreader", Georgia, serif;
+  font-family: "Geist", "system-ui", sans-serif;
   color: var(--color-ink);
-  background:
-    radial-gradient(circle at top left, rgba(61, 116, 109, 0.1), transparent 26%),
-    radial-gradient(circle at 86% 8%, rgba(198, 221, 216, 0.44), transparent 28%),
-    linear-gradient(180deg, #faf7f1 0%, var(--color-paper) 48%, #ebe4d8 100%);
+  background: #0d1117;
   line-height: 1.6;
   text-rendering: optimizeLegibility;
 }
@@ -37,7 +34,10 @@ ol {
   margin: 0;
 }
 
-h1,
+h1 {
+  font-family: "Newsreader", Georgia, serif;
+}
+
 h2,
 h3,
 h4,
@@ -48,7 +48,7 @@ nav,
 .brand,
 .tag,
 .eyebrow {
-  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
 }
 
 button,
@@ -63,6 +63,6 @@ code {
 }
 
 ::selection {
-  background: rgba(61, 116, 109, 0.18);
-  color: var(--color-ink);
+  background: rgba(63, 185, 80, 0.22);
+  color: #e6edf3;
 }

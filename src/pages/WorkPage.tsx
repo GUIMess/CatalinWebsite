@@ -50,7 +50,6 @@ export function WorkPage() {
         <p className="eyebrow">System View</p>
         <h1>{activeWork.title}</h1>
         <p>{activeWork.summary ?? activeWork.context}</p>
-        <p className="muted">{activeWork.context}</p>
         {activeWork.stack && <p className="muted">Stack: {activeWork.stack.join(", ")}</p>}
         <div className="button-row">
           <Link className="inline-link" to="/work">

@@ -2,10 +2,10 @@
   {
     "slug": "live-alert-bot-core",
     "title": "Production Sports Bot",
-    "summary": "My main build for over a year: a production bot for a large sports community. Live scores, rankings, news, competitions, and generated scoreboards, built and maintained solo in production.",
+    "summary": "A production bot for a large sports Discord. Live scores, rankings, news, competitions, and generated scoreboards — built and maintained solo on Railway.",
     "stack": ["Discord.js", "Node.js", "Express", "Bull", "Redis", "MongoDB", "Sharp", "SVG/Canvas", "Pino", "Prometheus", "Railway"],
     "context": "I built this as an entry-level dev and learned most of the hard lessons in production: memory leaks, duplicate event storms, provider outages, interaction timeouts, queue spikes, and auth hardening.",
-    "demoHook": "Flip between steady-state and stress-path views to see where this system bends first and what kept it stable.",
+    "demoHook": "Steady path is normal operation. Stress path is where it breaks.",
     "runtimePanels": [
       {
         "title": "Ingestion Pipeline",
@@ -117,84 +117,6 @@
         "stage": "2026 Q1 · Ops Hardening",
         "move": "Expanded dashboard auth, scheduler health tracking, and memory management.",
         "signal": "Debug cycles got faster. The GuildPresences and Sharp issues got found and fixed."
-      }
-    ],
-    "featured": true
-  },
-  {
-    "slug": "trek-field-guide",
-    "title": "Trek Field Guide",
-    "liveUrl": "https://trek-field-guide.netlify.app/",
-    "summary": "A visual side project where I pushed a strong theme without letting navigation or readability collapse.",
-    "stack": ["React", "JavaScript", "Netlify"],
-    "context": "I used this to sharpen UI craft while my main energy stayed on the bot. It is my cleanest visual-focused build.",
-    "demoHook": "Compare the calmer path and the overloaded path to see where style helps exploration and where it gets in the way.",
-    "runtimePanels": [
-      {
-        "title": "Navigation Density",
-        "broken": "Too many competing visual anchors slow down wayfinding.",
-        "fixed": "Clear section anchors and spacing hierarchy restore scan speed."
-      },
-      {
-        "title": "Theme Weight",
-        "broken": "Heavy thematic surfaces overpower task-focused content.",
-        "fixed": "Constrained style tokens preserve personality without losing legibility."
-      },
-      {
-        "title": "Interaction Rhythm",
-        "broken": "Motion timing stacks and adds visual fatigue.",
-        "fixed": "Reduced motion cadence keeps flow intentional and easier to follow."
-      }
-    ],
-    "postmortem": [
-      "Strong visuals improved exploration time.",
-      "Wayfinding had to stay strict or the theme got in the way.",
-      "Reducing component variants made iteration faster."
-    ],
-    "tradeoffs": [
-      {
-        "label": "Heavy thematic styling",
-        "benefit": "Distinct and memorable personality.",
-        "cost": "Readability degrades fast if the structure underneath is weak."
-      },
-      {
-        "label": "Exploration-first layout",
-        "benefit": "Encourages deeper browsing.",
-        "cost": "Task-focused users may prefer flatter paths."
-      }
-    ],
-    "checkpoints": [
-      {
-        "stage": "Phase 1 · Direction",
-        "move": "Locked visual language early and constrained component options.",
-        "signal": "The site felt cohesive rather than experimental noise."
-      },
-      {
-        "stage": "Phase 2 · Wayfinding",
-        "move": "Added stronger anchors and clearer section transitions.",
-        "signal": "Target content was easier to locate."
-      },
-      {
-        "stage": "Phase 3 · Density Tuning",
-        "move": "Compared compact, balanced, and expanded layouts.",
-        "signal": "Balanced mode provided the best readability-to-style ratio."
-      },
-      {
-        "stage": "Phase 4 · Cleanup",
-        "move": "Removed low-signal visual flourishes during break/fix passes.",
-        "signal": "Core actions became more obvious."
-      }
-    ],
-    "codeReceipts": [
-      {
-        "title": "Density Stress Testing",
-        "file": "field-guide/ui/layout.tsx",
-        "snippet": "const densityModes = [\"compact\", \"balanced\", \"expanded\"];"
-      },
-      {
-        "title": "Motion Budget Rule",
-        "file": "field-guide/styles/tokens.css",
-        "snippet": "transition-duration: var(--motion-fast); /* reduced on dense views */"
       }
     ],
     "featured": true

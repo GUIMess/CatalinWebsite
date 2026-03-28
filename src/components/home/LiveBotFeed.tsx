@@ -516,11 +516,7 @@ export function LiveBotFeed() {
         </div>
         <div>
           <p className="eyebrow">Live Telemetry</p>
-          <h2>Runtime proof that reads like a scene, not a dashboard.</h2>
-          <p className="chapter-copy">
-            Public-safe command rhythm, feature mix, and health signals from the production bot running in American
-            sports servers.
-          </p>
+          <h2>Live telemetry from the production bot.</h2>
         </div>
         <div className={`telemetry-status telemetry-status-${feedStatus}`}>
           <span className="telemetry-status-dot" aria-hidden="true" />

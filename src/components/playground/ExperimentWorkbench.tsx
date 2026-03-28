@@ -641,7 +641,6 @@ export function ExperimentWorkbench({ experiment }: ExperimentWorkbenchProps) {
         <article className="playground-readout-card">
           <p className="tag">Why this deserved a test</p>
           <h4>{experiment.question}</h4>
-          <p className="playground-workbench-note">Good labs make one risky product decision easier to trust.</p>
         </article>
 
         <article className={`playground-readout-card playground-readout-card-${output.tone}`}>
